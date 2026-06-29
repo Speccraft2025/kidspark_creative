@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop — Kidspark Creative</title>
+<meta name="description" content="Storybooks, coloring books, activity packs, flashcards, and songs from Kidspark Creative — affordable, joyful learning made for African families.">
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><img src="images/icon.svg" alt="Kidspark Creative"> Kid<span class="spark">Spark</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="shop.html" class="active">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="contact.html" class="btn btn-outline">Partner With Us</a>
+      <a href="#shop-grid" class="btn btn-primary">Shop Now</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="page-header">
+    <div class="blob" style="width:300px; height:300px; background:var(--yellow); top:-100px; right:-60px;"></div>
+    <div class="blob" style="width:240px; height:240px; background:var(--green); bottom:-90px; left:-60px;"></div>
+    <div class="container" style="position:relative;">
+      <span class="eyebrow" style="background:rgba(255,203,0,0.16); color:var(--yellow);">The Shop</span>
+      <h1>Learning adventures,<br>ready to print & play</h1>
+      <p>Affordable, joyful, and made for African families. New activity packs and stories added regularly.</p>
+    </div>
+  </section>
+
+  <!-- FREE DOWNLOAD -->
+  <section class="section" id="free">
+    <div class="container">
+      <div class="newsletter reveal" style="background:linear-gradient(120deg, var(--green), #79c75a); grid-template-columns: 1fr 1fr;">
+        <div>
+          <span class="eyebrow" style="background:rgba(255,255,255,0.35); color:var(--navy);">Free Download</span>
+          <h2>Sunny Day Friends — Coloring & Maze Pack</h2>
+          <p>A free 2-page printable: a big coloring page starring our sunshine mascot, plus a maze activity to help little hands build focus. Print at home, in your classroom, or at your community center.</p>
+          <a href="downloads/kidspark-free-coloring-maze-pack.pdf" class="btn btn-secondary mt-lg" download>Download Free Pack (PDF) →</a>
+        </div>
+        <div class="text-center">
+          <div class="icon-badge bg-orange" style="width:140px; height:140px; border-radius:32px; margin:0 auto;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:70px;height:70px;"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORY TAGS -->
+  <section class="section-sm" style="padding-top:0;">
+    <div class="container">
+      <div class="tag-row text-center reveal" style="justify-content:center;">
+        <span class="tag">📖 Storybooks</span>
+        <span class="tag">🖍️ Coloring & Activity Packs</span>
+        <span class="tag">🔤 Flashcards & Worksheets</span>
+        <span class="tag">🎵 Audio & Songs</span>
+        <span class="tag">🎒 Learning Kits</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT GRID -->
+  <section class="section" id="shop-grid" style="padding-top:30px;">
+    <div class="container">
+      <div class="shop-grid reveal">
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:var(--cream-deep);">
+            <span class="badge badge-free">Free Download</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Sunny Day Friends</h3>
+            <p>Coloring & Maze Pack — 2 printable pages starring our sunshine mascot.</p>
+            <div class="product-meta">
+              <span class="price">Free</span>
+              <a href="downloads/kidspark-free-coloring-maze-pack.pdf" class="btn btn-primary btn-sm" download>Download</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:#FFF1DC;">
+            <span class="badge badge-soon">Coming Soon</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5"><path d="M3 7v10l9 4 9-4V7l-9-4-9 4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Jungle Maze Adventures</h3>
+            <p>20 hand-crafted mazes through savannah, jungle, and village scenes.</p>
+            <div class="product-meta">
+              <span class="price">$2.99 <span>/ pack</span></span>
+              <a href="contact.html" class="btn btn-outline btn-sm">Notify Me</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:#FFF7DC;">
+            <span class="badge badge-soon">Coming Soon</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a17800" stroke-width="1.5"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 9h20"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Alphabet Safari Flashcards</h3>
+            <p>52 cards pairing letters with African animals and everyday words.</p>
+            <div class="product-meta">
+              <span class="price">$3.99 <span>/ deck</span></span>
+              <a href="contact.html" class="btn btn-outline btn-sm">Notify Me</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:#EAF3E5;">
+            <span class="badge badge-popular">Most Anticipated</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Bedtime Stories: Anansi & Friends</h3>
+            <p>A digital storybook of classic West African trickster tales, retold for little ears.</p>
+            <div class="product-meta">
+              <span class="price">$5.99 <span>/ e-book</span></span>
+              <a href="contact.html" class="btn btn-outline btn-sm">Notify Me</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:#FFF1DC;">
+            <span class="badge badge-soon">Coming Soon</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Counting with Kente</h3>
+            <p>A pattern & number learning kit inspired by traditional Kente weaving.</p>
+            <div class="product-meta">
+              <span class="price">$4.99 <span>/ kit</span></span>
+              <a href="contact.html" class="btn btn-outline btn-sm">Notify Me</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="product-card">
+          <div class="product-thumb" style="background:#FFF7DC;">
+            <span class="badge badge-soon">Coming Soon</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="#a17800" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+          </div>
+          <div class="product-body">
+            <h3>Rhythm & Rhyme: Nursery Songs Vol. 1</h3>
+            <p>Ten original sing-along songs and lullabies for your littlest listeners.</p>
+            <div class="product-meta">
+              <span class="price">$2.99 <span>/ album</span></span>
+              <a href="contact.html" class="btn btn-outline btn-sm">Notify Me</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- BULK / SCHOOLS CTA -->
+  <section class="section section-cream-deep">
+    <div class="container grid-2 reveal" style="align-items:center;">
+      <div>
+        <span class="eyebrow">For Schools & NGOs</span>
+        <h2>Need these for a whole classroom or community?</h2>
+        <p class="lede">We offer bulk licensing and custom packs for schools, libraries, and child-development programs — priced to stay affordable at scale.</p>
+        <a href="contact.html" class="btn btn-primary mt-lg">Talk to Us About Bulk Access</a>
+      </div>
+      <div class="grid-2" style="gap:18px;">
+        <div class="card text-center"><div class="icon-badge bg-orange" style="margin:0 auto 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div><h3 style="font-size:1.05rem;">Schools</h3></div>
+        <div class="card text-center"><div class="icon-badge bg-green" style="margin:0 auto 12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><h3 style="font-size:1.05rem;">NGOs</h3></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEWSLETTER -->
+  <section class="section section-sm">
+    <div class="container">
+      <div class="newsletter reveal">
+        <div>
+          <h2>Be the first to know</h2>
+          <p>Join the Spark List for early access to new packs, drops, and free printables before anyone else.</p>
+        </div>
+        <div>
+          <form class="newsletter-form" id="newsletterForm">
+            <input type="email" required placeholder="Your email address" aria-label="Email address">
+            <button type="submit" class="btn btn-secondary">Join the Spark List</button>
+          </form>
+          <p class="form-success" id="newsletterSuccess">You're in! Watch your inbox for fresh printables. 🎉</p>
+          <p class="form-note">We respect your inbox. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a href="index.html" class="brand"><img src="images/icon.svg" alt="Kidspark Creative"> Kid<span class="spark" style="color:var(--orange);">Spark</span></a>
+        <p>Africa's children's media and creative education studio — building joyful, affordable learning experiences for every child.</p>
+        <div class="social-row">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="4"/><polygon points="10 9 16 12 10 15 10 9"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="shop.html">Shop</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get Involved</h4>
+        <ul>
+          <li><a href="contact.html">Partner With Us</a></li>
+          <li><a href="shop.html#free">Free Printable</a></li>
+          <li><a href="about.html#philosophy">Our Philosophy</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Stay in the Loop</h4>
+        <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:14px;">New packs, stories, and updates — straight to your inbox.</p>
+        <form class="footer-mini-form" id="footerForm">
+          <input type="email" required placeholder="Email address" aria-label="Email address">
+          <button type="submit" class="btn btn-yellow btn-sm">Join</button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Kidspark Creative. All rights reserved.</span>
+      <span>Made with ♥ for African children, everywhere.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
