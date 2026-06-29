@@ -33,18 +33,43 @@ document.addEventListener('DOMContentLoaded', function () {
     revealEls.forEach(function (el) { el.classList.add('is-visible'); });
   }
 
-  // Generic form success handler (no backend yet — front-end confirmation only)
-  function handleForm(formId, successId, resetDelay) {
+  // Encode a plain object as a URL-encoded form body (for Netlify Forms AJAX submission)
+  function encodeForm(data) {
+    return Object.keys(data)
+      .map(function (key) { return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]); })
+      .join('&');
+  }
+
+  // Submits a form to Netlify Forms via AJAX, then shows the in-page success message.
+  // Falls back to a native form POST (handled by Netlify's default thank-you redirect)
+  // if fetch is unavailable or the request fails.
+  function handleForm(formId, successId) {
     var form = document.getElementById(formId);
     if (!form) return;
+
     form.addEventListener('submit', function (e) {
       e.preventDefault();
-      var success = successId ? document.getElementById(successId) : null;
-      if (success) {
-        success.classList.add('show');
-        setTimeout(function () { success.classList.remove('show'); }, 6000);
-      }
-      form.reset();
+
+      var data = {};
+      new FormData(form).forEach(function (value, key) { data[key] = value; });
+
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: encodeForm(data)
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('Form submission failed: ' + res.status);
+          var success = successId ? document.getElementById(successId) : null;
+          if (success) {
+            success.classList.add('show');
+            setTimeout(function () { success.classList.remove('show'); }, 6000);
+          }
+          form.reset();
+        })
+        .catch(function () {
+          alert("Sorry, that didn't go through. Please try again in a moment, or email us directly at jayzelisaac@gmail.com.");
+        });
     });
   }
 

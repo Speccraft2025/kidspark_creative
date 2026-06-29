@@ -459,6 +459,7 @@ p { color: var(--ink-soft); }
 .form-note { font-size: 0.8rem; margin-top: 10px; color: rgba(30,33,43,0.65); }
 .form-success { display: none; font-family: var(--font-display); font-weight: 600; color: var(--navy); background: rgba(255,255,255,0.6); padding: 14px 18px; border-radius: var(--radius-md); }
 .form-success.show { display: block; }
+.hp-field { position: absolute; left: -9999px; top: -9999px; }
 
 /* ---------- Footer ---------- */
 .footer { background: var(--navy); color: rgba(255,255,255,0.78); padding: 72px 0 28px; }

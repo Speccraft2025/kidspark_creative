@@ -195,8 +195,10 @@
           <p>Join the Spark List for early access to new packs, drops, and free printables before anyone else.</p>
         </div>
         <div>
-          <form class="newsletter-form" id="newsletterForm">
-            <input type="email" required placeholder="Your email address" aria-label="Email address">
+          <form class="newsletter-form" id="newsletterForm" name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="newsletter">
+            <p class="hp-field"><label>Don't fill this out if you're human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+            <input type="email" name="email" required placeholder="Your email address" aria-label="Email address">
             <button type="submit" class="btn btn-secondary">Join the Spark List</button>
           </form>
           <p class="form-success" id="newsletterSuccess">You're in! Watch your inbox for fresh printables. 🎉</p>
@@ -240,8 +242,10 @@
       <div>
         <h4>Stay in the Loop</h4>
         <p style="color:rgba(255,255,255,0.6); font-size:0.9rem; margin-bottom:14px;">New packs, stories, and updates — straight to your inbox.</p>
-        <form class="footer-mini-form" id="footerForm">
-          <input type="email" required placeholder="Email address" aria-label="Email address">
+        <form class="footer-mini-form" id="footerForm" name="newsletter" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="newsletter">
+          <p class="hp-field"><label>Don't fill this out if you're human: <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+          <input type="email" name="email" required placeholder="Email address" aria-label="Email address">
           <button type="submit" class="btn btn-yellow btn-sm">Join</button>
         </form>
       </div>
