@@ -70,6 +70,10 @@ exports.handler = async (event) => {
     });
   } catch (e) {
     console.error('create-checkout failed:', e);
+    // Paystack rejects malformed emails — surface that clearly so buyers can fix it.
+    if (/email/i.test(e.message || '')) {
+      return json(400, { error: 'That email address looks invalid — please double-check it and try again.' });
+    }
     return json(500, { error: 'Could not start checkout. Please try again.' });
   }
 };
