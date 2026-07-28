@@ -69,17 +69,14 @@
       '<a class="btn btn-primary" href="shop.html">Back to the shop</a>';
   }
 
-  function showSuccess(downloads) {
-    var rows = downloads.map(function (d) {
-      return '<div class="dl-row"><b>' + esc(d.fileName) + '</b>' +
-        '<a class="btn btn-secondary btn-sm" href="' + esc(d.url) + '">Download</a></div>';
-    }).join('');
+  function showSuccess(libraryUrl) {
     content.innerHTML =
       '<div class="thanks-emoji">🎉</div>' +
       '<h1>Thank you! <span class="spark">Enjoy!</span></h1>' +
-      '<p class="thanks-sub">Payment successful. Your downloads are ready below — we’ve emailed the links too.</p>' +
-      '<div class="dl-list">' + rows + '</div>' +
-      '<p class="thanks-note">Links stay active for 72 hours. Check your inbox (and spam) for a backup copy.</p>';
+      '<p class="thanks-sub">Payment successful. Your download library is ready — open it to grab each page, or the whole pack as a ZIP. We’ve emailed the link too.</p>' +
+      '<a class="btn btn-primary" href="' + esc(libraryUrl) + '">Open my downloads →</a>' +
+      '<p class="thanks-note">Taking you there automatically… Link stays active for 72 hours (also in your inbox).</p>';
+    setTimeout(function () { window.location.href = libraryUrl; }, 2500);
   }
 
   function verify() {
@@ -88,7 +85,7 @@
       .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
       .then(function (res) {
         if (!res.ok) throw new Error(res.d.error || 'Verification failed');
-        if (res.d.paid) showSuccess(res.d.downloads);
+        if (res.d.paid) showSuccess(res.d.libraryUrl);
         else showError('We could not confirm this payment yet. If you were charged, your download link will arrive by email shortly.');
       })
       .catch(function (e) { showError(e.message); });

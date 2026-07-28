@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Downloads — Kidspark Creative</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .lib-header { background: var(--navy); color: #fff; padding: 120px 0 48px; text-align: center; }
+  .lib-header h1 { color: #fff; margin-bottom: 10px; }
+  .lib-header p { color: rgba(255,255,255,0.72); max-width: 620px; margin: 0 auto; }
+
+  .progress-wrap { position: sticky; top: 84px; z-index: 50; background: rgba(255,251,243,0.94); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(30,33,43,0.08); padding: 16px 0; }
+  .progress-inner { display: flex; align-items: center; gap: 18px; }
+  .progress-bar { flex: 1; height: 12px; background: rgba(30,33,43,0.1); border-radius: 999px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--green), #79c75a); border-radius: 999px; transition: width 0.4s ease; }
+  .progress-label { font-family: var(--font-display); font-weight: 600; color: var(--navy); white-space: nowrap; }
+
+  .pack-section { margin-bottom: 52px; }
+  .pack-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 22px; }
+  .pack-head h2 { font-size: 1.5rem; }
+  .pack-head .pack-count { font-family: var(--font-body); font-size: 0.9rem; color: var(--ink-soft); font-weight: 600; }
+
+  .page-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+  .page-card { background: #fff; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); padding: 18px 16px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: transform 0.2s ease, box-shadow 0.2s ease; position: relative; }
+  .page-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .page-card.done { outline: 2px solid var(--green); outline-offset: -2px; }
+  .page-thumb { width: 54px; height: 54px; border-radius: 14px; background: var(--cream-deep); display: flex; align-items: center; justify-content: center; color: var(--orange-dark); }
+  .page-thumb svg { width: 26px; height: 26px; }
+  .page-label { font-family: var(--font-display); font-weight: 600; color: var(--navy); font-size: 0.95rem; }
+  .page-card .btn { width: 100%; }
+  .done-check { position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%; background: var(--green); color: #fff; display: none; align-items: center; justify-content: center; font-size: 0.8rem; }
+  .page-card.done .done-check { display: flex; }
+
+  .lib-state { text-align: center; padding: 80px 20px; color: var(--ink-soft); }
+  .spinner { width: 46px; height: 46px; border: 4px solid rgba(30,33,43,0.1); border-top-color: var(--orange); border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><img src="images/icon.svg" alt="Kidspark Creative"> Kid<span class="spark">Spark</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<section class="lib-header">
+  <div class="container">
+    <h1>Your download library 🎨</h1>
+    <p>Download each page one at a time — we’ll tick off what you’ve saved — or grab the whole pack as a ZIP. Come back anytime within 72 hours.</p>
+  </div>
+</section>
+
+<div class="progress-wrap" id="progressWrap" hidden>
+  <div class="container progress-inner">
+    <span class="progress-label" id="progressLabel">0 / 0 pages</span>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+</div>
+
+<main class="section">
+  <div class="container" id="libRoot">
+    <div class="lib-state"><div class="spinner"></div><p>Loading your downloads…</p></div>
+  </div>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var PAGE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>';
+  var token = new URLSearchParams(location.search).get('token');
+  var root = document.getElementById('libRoot');
+  var STORE_KEY = 'ks_downloaded_' + (token || 'none');
+
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { done = {}; }
+  var totalPages = 0;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(done)); } catch (e) {} }
+
+  function updateProgress() {
+    var count = Object.keys(done).length;
+    var pct = totalPages ? Math.round((count / totalPages) * 100) : 0;
+    document.getElementById('progressLabel').textContent = count + ' / ' + totalPages + ' pages';
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  function markDone(key, cardEl) {
+    if (!done[key]) { done[key] = 1; save(); }
+    if (cardEl) cardEl.classList.add('done');
+    updateProgress();
+  }
+
+  function showError(msg) {
+    root.innerHTML = '<div class="lib-state"><h2 style="margin-bottom:10px;">We couldn’t open this library</h2>' +
+      '<p>' + esc(msg) + '</p><p style="margin-top:20px;"><a class="btn btn-primary" href="shop.html">Back to the shop</a></p></div>';
+  }
+
+  function render(data) {
+    var sections = data.sections || [];
+    totalPages = sections.reduce(function (n, s) { return n + s.pages.length; }, 0);
+    if (totalPages === 0) { showError('No downloadable pages were found for this purchase yet. Please contact support.'); return; }
+
+    document.getElementById('progressWrap').hidden = false;
+
+    var html = '';
+    if (data.bundleZipUrl) {
+      html += '<div style="margin-bottom:34px;">' +
+        '<a class="btn btn-secondary" href="' + esc(data.bundleZipUrl) + '">⬇ Download EVERYTHING (all pages, ZIP)</a></div>';
+    }
+
+    sections.forEach(function (s) {
+      html += '<div class="pack-section" data-pack="' + esc(s.id) + '">' +
+        '<div class="pack-head"><h2>' + esc(s.name) + ' <span class="pack-count">' + s.pages.length + ' pages</span></h2>' +
+        '<a class="btn btn-outline btn-sm" href="' + esc(s.zipUrl) + '">Download all pages (ZIP)</a></div>' +
+        '<div class="page-grid">';
+      s.pages.forEach(function (p) {
+        var isDone = !!done[p.key];
+        html += '<div class="page-card' + (isDone ? ' done' : '') + '" data-key="' + esc(p.key) + '">' +
+          '<div class="done-check">✓</div>' +
+          '<div class="page-thumb">' + PAGE_ICON + '</div>' +
+          '<div class="page-label">' + esc(p.label) + '</div>' +
+          '<a class="btn btn-primary btn-sm dl" href="' + esc(p.url) + '" data-key="' + esc(p.key) + '">Download</a>' +
+          '</div>';
+      });
+      html += '</div></div>';
+    });
+
+    root.innerHTML = html;
+
+    root.querySelectorAll('a.dl').forEach(function (a) {
+      a.addEventListener('click', function () {
+        var card = a.closest('.page-card');
+        markDone(a.getAttribute('data-key'), card);
+      });
+    });
+    updateProgress();
+  }
+
+  if (!token) { showError('This link is missing its access token. Use the link from your success page or email.'); return; }
+
+  fetch('/api/library?token=' + encodeURIComponent(token))
+    .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+    .then(function (res) {
+      if (!res.ok) throw new Error(res.d.error || 'Could not load your library.');
+      render(res.d);
+    })
+    .catch(function (e) { showError(e.message); });
+})();
+</script>
+</body>
+</html>

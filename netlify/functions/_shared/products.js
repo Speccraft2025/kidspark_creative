@@ -5,17 +5,29 @@
 // product ids, and the checkout function looks the price up in this file.
 //
 // priceMinor = price in the SMALLEST unit of your currency (i.e. amount x 100).
-//   Currency is KES (Kenyan Shilling), so priceMinor is in CENTS:
-//     KES 150  ->  15000
-//     KES 600  ->  60000
-//   (Paystack always charges in the currency's subunit.)
+//   Currency is KES, so priceMinor is in CENTS:  KES 150 -> 15000.
 //
-// storagePath = the object path inside your PRIVATE Supabase bucket.
-//   Upload the packaged file (a single PDF per pack, one ZIP for the bundle)
-//   to that exact path. See SETUP.md.
+// DELIVERY (gallery model): each pack is delivered as individual page PDFs plus
+// a single "all pages" ZIP, stored in your PRIVATE Supabase bucket under:
+//     library/<packId>/pages/...      (the individual page PDFs)
+//     library/<packId>/<packId>-all.zip
+// The bundle simply unlocks every pack folder + a master ZIP of all pages.
 //
 // TODO(kidspark): set your real KES prices before going live.
 // ---------------------------------------------------------------------------
+
+const PACK_IDS = ['alphabet', 'food', 'fruits', 'wildlife', 'mazes', 'dots'];
+
+function packDelivery(id) {
+  return {
+    // folder prefix that a buyer of this product is allowed to download from
+    allowPrefix: `library/${id}/`,
+    // where the individual page PDFs live (listed at request time)
+    pagesPrefix: `library/${id}/pages`,
+    // the "all pages" zip for this pack
+    zipPath: `library/${id}/${id}-all.zip`,
+  };
+}
 
 const PRODUCTS = [
   {
@@ -24,9 +36,11 @@ const PRODUCTS = [
     description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes & Join-the-Dots. Best value.',
     type: 'bundle',
     priceMinor: 60000, // KES 600  <-- PLACEHOLDER
-    files: [
-      { name: 'KidSpark Complete Bundle', storagePath: 'bundle/kidspark-complete-bundle.zip' },
-    ],
+    delivery: {
+      includes: PACK_IDS,               // expands to every pack's pages
+      allowPrefix: 'library/',          // may download anything under library/
+      zipPath: 'library/bundle/kidspark-all-pages.zip',
+    },
   },
   {
     id: 'alphabet',
@@ -34,7 +48,7 @@ const PRODUCTS = [
     description: 'Master the ABCs with fun, simple illustrations for every letter.',
     type: 'pack',
     priceMinor: 15000, // KES 150  <-- PLACEHOLDER
-    files: [{ name: 'Alphabet Coloring Pack', storagePath: 'packs/alphabet.pdf' }],
+    delivery: packDelivery('alphabet'),
   },
   {
     id: 'food',
@@ -42,7 +56,7 @@ const PRODUCTS = [
     description: 'Healthy snacks and yummy treats to bring to life with color.',
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
-    files: [{ name: 'Food Coloring Pack', storagePath: 'packs/food.pdf' }],
+    delivery: packDelivery('food'),
   },
   {
     id: 'fruits',
@@ -50,7 +64,7 @@ const PRODUCTS = [
     description: 'A juicy set of fruit illustrations for little colorists.',
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
-    files: [{ name: 'Fruits Coloring Pack', storagePath: 'packs/fruits.pdf' }],
+    delivery: packDelivery('fruits'),
   },
   {
     id: 'wildlife',
@@ -58,7 +72,7 @@ const PRODUCTS = [
     description: 'Venture into the wild and bring majestic animals to life.',
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
-    files: [{ name: 'Wildlife Coloring Pack', storagePath: 'packs/wildlife.pdf' }],
+    delivery: packDelivery('wildlife'),
   },
   {
     id: 'mazes',
@@ -66,15 +80,15 @@ const PRODUCTS = [
     description: '21 printable mazes to sharpen focus and problem-solving.',
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
-    files: [{ name: 'Maze Activity Pack', storagePath: 'packs/mazes.pdf' }],
+    delivery: packDelivery('mazes'),
   },
   {
     id: 'dots',
     name: 'Join-the-Dots Activity Pack',
-    description: '37 connect-the-dots pages for counting and fine motor skills.',
+    description: 'Connect-the-dots pages for counting and fine motor skills.',
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
-    files: [{ name: 'Join-the-Dots Activity Pack', storagePath: 'packs/join-the-dots.pdf' }],
+    delivery: packDelivery('dots'),
   },
 ];
 
@@ -93,11 +107,8 @@ function publicCatalog() {
 }
 
 // Look up a validated list of product ids and total them, server-side.
-// Throws on any unknown id so we never charge for something that isn't real.
 function resolveCart(ids) {
-  if (!Array.isArray(ids) || ids.length === 0) {
-    throw new Error('Cart is empty.');
-  }
+  if (!Array.isArray(ids) || ids.length === 0) throw new Error('Cart is empty.');
   const unique = [...new Set(ids)];
   const items = unique.map((id) => {
     const product = byId.get(id);
@@ -108,4 +119,46 @@ function resolveCart(ids) {
   return { items, amountMinor };
 }
 
-module.exports = { PRODUCTS, byId, publicCatalog, resolveCart };
+// Given the product ids on an order, return the flat list of "pack sections" a
+// buyer can see in their gallery, plus the set of allowed download prefixes.
+function deliveryForOrder(productIds) {
+  const sections = new Map(); // packId -> { id, name, pagesPrefix, zipPath }
+  const allowPrefixes = new Set();
+  let bundleZip = null;
+
+  for (const pid of productIds || []) {
+    const product = byId.get(pid);
+    if (!product) continue;
+    allowPrefixes.add(product.delivery.allowPrefix);
+
+    if (product.type === 'bundle') {
+      if (product.delivery.zipPath) bundleZip = { name: 'Everything (all pages, ZIP)', zipPath: product.delivery.zipPath };
+      for (const packId of product.delivery.includes) {
+        const pack = byId.get(packId);
+        if (pack) sections.set(packId, sectionFor(pack));
+      }
+    } else {
+      sections.set(pid, sectionFor(product));
+    }
+  }
+
+  return { sections: [...sections.values()], allowPrefixes: [...allowPrefixes], bundleZip };
+}
+
+function sectionFor(pack) {
+  return {
+    id: pack.id,
+    name: pack.name,
+    pagesPrefix: pack.delivery.pagesPrefix,
+    zipPath: pack.delivery.zipPath,
+  };
+}
+
+// Is this storage path allowed for an order with these product ids?
+function pathAllowed(productIds, path) {
+  if (typeof path !== 'string' || path.includes('..')) return false;
+  const { allowPrefixes } = deliveryForOrder(productIds);
+  return allowPrefixes.some((prefix) => path.startsWith(prefix));
+}
+
+module.exports = { PRODUCTS, byId, publicCatalog, resolveCart, deliveryForOrder, pathAllowed };
