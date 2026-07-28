@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank You — Kidspark Creative</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .thanks-wrap { min-height: calc(100vh - 84px); display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
+  .thanks-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); max-width: 560px; width: 100%; padding: 48px 40px; text-align: center; }
+  .thanks-emoji { font-size: 3rem; line-height: 1; }
+  .thanks-card h1 { font-size: 2rem; margin: 14px 0 8px; }
+  .thanks-card h1 .spark { color: var(--orange); }
+  .thanks-sub { color: var(--ink-soft); margin-bottom: 26px; }
+  .dl-list { text-align: left; margin: 22px 0; display: flex; flex-direction: column; gap: 12px; }
+  .dl-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; border: 1.5px solid rgba(30,33,43,0.1); border-radius: var(--radius-md); padding: 15px 20px; }
+  .dl-row b { font-family: var(--font-display); font-weight: 600; color: var(--navy); }
+  .spinner { width: 46px; height: 46px; border: 4px solid rgba(30,33,43,0.1); border-top-color: var(--orange); border-radius: 50%; margin: 30px auto; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .thanks-note { font-size: 0.85rem; color: var(--ink-soft); margin-top: 18px; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><img src="images/icon.svg" alt="Kidspark Creative"> Kid<span class="spark">Spark</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="shop.html" class="btn btn-primary">Back to Shop</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <div class="thanks-wrap">
+    <div class="thanks-card" id="card">
+      <div id="content">
+        <div class="spinner"></div>
+        <p class="thanks-sub">Confirming your payment…</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  var params = new URLSearchParams(location.search);
+  var reference = params.get('reference') || params.get('trxref');
+  var content = document.getElementById('content');
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+
+  function showError(msg) {
+    content.innerHTML =
+      '<div class="thanks-emoji">😕</div>' +
+      '<h1>Hmm, something’s off</h1>' +
+      '<p class="thanks-sub">' + esc(msg) + '</p>' +
+      '<a class="btn btn-primary" href="shop.html">Back to the shop</a>';
+  }
+
+  function showSuccess(downloads) {
+    var rows = downloads.map(function (d) {
+      return '<div class="dl-row"><b>' + esc(d.fileName) + '</b>' +
+        '<a class="btn btn-secondary btn-sm" href="' + esc(d.url) + '">Download</a></div>';
+    }).join('');
+    content.innerHTML =
+      '<div class="thanks-emoji">🎉</div>' +
+      '<h1>Thank you! <span class="spark">Enjoy!</span></h1>' +
+      '<p class="thanks-sub">Payment successful. Your downloads are ready below — we’ve emailed the links too.</p>' +
+      '<div class="dl-list">' + rows + '</div>' +
+      '<p class="thanks-note">Links stay active for 72 hours. Check your inbox (and spam) for a backup copy.</p>';
+  }
+
+  function verify() {
+    if (!reference) { showError('No payment reference found in the link.'); return; }
+    fetch('/api/verify?reference=' + encodeURIComponent(reference))
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error || 'Verification failed');
+        if (res.d.paid) showSuccess(res.d.downloads);
+        else showError('We could not confirm this payment yet. If you were charged, your download link will arrive by email shortly.');
+      })
+      .catch(function (e) { showError(e.message); });
+  }
+  verify();
+</script>
+<script src="js/main.js"></script>
+</body>
+</html>

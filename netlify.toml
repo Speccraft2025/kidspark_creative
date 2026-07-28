@@ -1,0 +1,15 @@
+# Netlify configuration for the KidSpark store.
+
+[build]
+  # Static site — no build step. Functions live in the folder below.
+  publish = "."
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"
+
+# Pretty API paths:  /api/verify  ->  /.netlify/functions/verify
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200

@@ -1,0 +1,16 @@
+{
+  "name": "kidspark-store",
+  "version": "1.0.0",
+  "private": true,
+  "description": "KidSpark self-hosted store — Netlify Functions + Supabase + Paystack.",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  }
+}
