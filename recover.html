@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retrieve My Downloads — Kidspark Creative</title>
+<link rel="icon" type="image/svg+xml" href="images/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .rec-wrap { min-height: calc(100vh - 84px); display: flex; align-items: center; justify-content: center; padding: 60px 20px; }
+  .rec-card { background: #fff; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); max-width: 520px; width: 100%; padding: 44px 40px; text-align: center; }
+  .rec-card h1 { font-size: 1.9rem; margin-bottom: 8px; }
+  .rec-card p.sub { color: var(--ink-soft); margin-bottom: 26px; }
+  .rec-form { display: flex; flex-direction: column; gap: 14px; }
+  .rec-form input { padding: 15px 18px; border-radius: var(--radius-sm); border: 1.5px solid rgba(30,33,43,0.14); font-family: var(--font-body); font-size: 1rem; }
+  .rec-form input:focus { outline: none; border-color: var(--orange); box-shadow: 0 0 0 4px rgba(255,148,39,0.14); }
+  .rec-msg { margin-top: 20px; font-size: 0.98rem; }
+  .rec-msg.err { color: var(--orange-dark); }
+  .rec-note { font-size: 0.82rem; color: var(--ink-soft); margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container">
+    <a href="index.html" class="brand"><img src="images/icon.svg" alt="Kidspark Creative"> Kid<span class="spark">Spark</span></a>
+    <nav class="nav-links" id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="shop.html">Shop</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <a href="shop.html" class="btn btn-primary">Shop</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <div class="rec-wrap">
+    <div class="rec-card">
+      <h1>Retrieve my downloads</h1>
+      <p class="sub">Bought a pack and lost the link? Enter the email you paid with and we’ll bring your download library right back.</p>
+      <form class="rec-form" id="recForm">
+        <input type="email" id="recEmail" placeholder="The email you paid with" autocomplete="email" required>
+        <button type="submit" class="btn btn-primary btn-block" id="recBtn">Find my downloads</button>
+      </form>
+      <div class="rec-msg" id="recMsg"></div>
+      <p class="rec-note">We’ll also email the link to that address as a backup. Only paid purchases can be retrieved.</p>
+    </div>
+  </div>
+</main>
+
+<script src="js/main.js"></script>
+<script>
+(function () {
+  var form = document.getElementById('recForm');
+  var btn = document.getElementById('recBtn');
+  var msg = document.getElementById('recMsg');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    msg.className = 'rec-msg';
+    msg.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Searching…';
+    fetch('/api/recover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: document.getElementById('recEmail').value.trim() })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.d.error || 'Something went wrong.');
+        if (res.d.found) {
+          msg.innerHTML = '✅ Found your purchase! <a class="btn btn-secondary btn-sm" style="margin-top:12px;display:inline-block;" href="' + esc(res.d.libraryUrl) + '">Open my downloads →</a><br><span style="font-size:.85rem;color:var(--ink-soft);">We’ve emailed the link too.</span>';
+        } else {
+          msg.className = 'rec-msg err';
+          msg.textContent = 'We couldn’t find a paid purchase for that email. Double-check the address you paid with, or contact us.';
+        }
+      })
+      .catch(function (err) { msg.className = 'rec-msg err'; msg.textContent = err.message; })
+      .then(function () { btn.disabled = false; btn.textContent = 'Find my downloads'; });
+  });
+})();
+</script>
+</body>
+</html>

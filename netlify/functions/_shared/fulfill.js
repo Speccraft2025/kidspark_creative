@@ -6,8 +6,8 @@
 
 const { supabase, sendEmail, randomToken, siteUrl } = require('./lib');
 
-const GRANT_TTL_HOURS = 72; // gallery link stays valid for 3 days
-const MAX_DOWNLOADS = 500;  // generous: covers per-page downloads + revisits
+const GRANT_TTL_HOURS = 24 * 365; // gallery link stays valid ~1 year
+const MAX_DOWNLOADS = 5000;       // generous: per-page downloads across revisits
 
 // Returns { order, token } — token is the buyer's gallery access token.
 async function fulfillOrder(reference) {
@@ -77,8 +77,9 @@ async function sendDeliveryEmail(to, token) {
           Open my downloads →
         </a>
       </p>
-      <p style="font-size:13px;color:#6B7280">This link stays active for 72 hours.
-      Bookmark the page and you can keep downloading pages one at a time.
+      <p style="font-size:13px;color:#6B7280">Bookmark this link — it stays active
+      so you can keep downloading pages one at a time. Lost it? Visit our site and
+      use "Retrieve my downloads" with this email address.
       Having trouble? Just reply to this email.</p>
       <p style="font-size:13px;color:#6B7280">— The KidSpark Team</p>
     </div>`;
@@ -86,4 +87,4 @@ async function sendDeliveryEmail(to, token) {
   return sendEmail({ to, subject: 'Your KidSpark downloads are ready 🎨', html });
 }
 
-module.exports = { fulfillOrder };
+module.exports = { fulfillOrder, sendDeliveryEmail, libraryUrl, GRANT_TTL_HOURS, MAX_DOWNLOADS };
