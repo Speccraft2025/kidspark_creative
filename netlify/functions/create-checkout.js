@@ -19,7 +19,8 @@ exports.handler = async (event) => {
     return json(400, { error: 'Invalid JSON body' });
   }
 
-  const { email, productIds } = payload;
+  const email = typeof payload.email === 'string' ? payload.email.trim().toLowerCase() : '';
+  const { productIds } = payload;
   if (!isValidEmail(email)) return json(400, { error: 'A valid email is required.' });
 
   let cart;

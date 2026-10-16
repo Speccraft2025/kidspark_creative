@@ -327,8 +327,8 @@
   <div class="cart-drawer-body" id="cartBody"></div>
   <div class="cart-drawer-foot">
     <div class="cart-total"><span>Total</span><span id="cartTotal"></span></div>
-    <div class="cart-err" id="cartErr"></div>
-    <input type="email" class="cart-email" id="cartEmail" placeholder="Your email (for the download link)" autocomplete="email">
+    <div class="cart-err" id="cartErr" role="alert" aria-live="polite"></div>
+    <input type="email" class="cart-email" id="cartEmail" placeholder="Your email (for the download link)" autocomplete="email" required aria-describedby="cartErr">
     <button class="btn btn-primary btn-block" id="cartCheckout" disabled>Pay with Paystack</button>
     <p class="cart-note">Secure payment via Paystack · instant download + emailed link</p>
   </div>
@@ -443,9 +443,18 @@
   }
 
   function validate() {
-    var email = el('cartEmail').value.trim();
-    var ok = cart.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    var emailInput = el('cartEmail');
+    var email = emailInput.value.trim();
+    var hasValidEmail = email.length > 0 && emailInput.validity.valid;
+    var ok = cart.length > 0 && hasValidEmail;
     el('cartCheckout').disabled = !ok;
+    emailInput.setAttribute('aria-invalid', String(email.length > 0 && !hasValidEmail));
+    if (email.length > 0 && !hasValidEmail) {
+      el('cartErr').textContent = 'Enter a valid email address to receive your download link.';
+    } else if (el('cartErr').dataset.validationError === 'true') {
+      el('cartErr').textContent = '';
+    }
+    el('cartErr').dataset.validationError = String(email.length > 0 && !hasValidEmail);
   }
 
   function openCart() { el('cartOverlay').classList.add('open'); el('cartDrawer').classList.add('open'); }
@@ -454,7 +463,10 @@
   function checkout() {
     var btn = el('cartCheckout');
     var err = el('cartErr');
+    validate();
+    if (btn.disabled) return;
     err.textContent = '';
+    err.dataset.validationError = 'false';
     btn.disabled = true;
     btn.textContent = 'Starting checkout…';
     fetch('/api/create-checkout', {
@@ -462,9 +474,15 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: el('cartEmail').value.trim(), productIds: cart })
     })
-      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (r) {
+        return r.text().then(function (body) {
+          var data;
+          try { data = JSON.parse(body); } catch (_) { data = {}; }
+          return { ok: r.ok, d: data };
+        });
+      })
       .then(function (res) {
-        if (!res.ok) throw new Error(res.d.error || 'Checkout failed');
+        if (!res.ok) throw new Error(res.d.error || 'We could not start checkout. Please try again.');
         window.location.href = res.d.authorization_url;
       })
       .catch(function (e) {
