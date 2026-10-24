@@ -16,7 +16,7 @@
 // TODO(kidspark): set your real KES prices before going live.
 // ---------------------------------------------------------------------------
 
-const PACK_IDS = ['alphabet', 'food', 'fruits', 'wildlife', 'mazes', 'dots'];
+const PACK_IDS = ['alphabet', 'food', 'fruits', 'wildlife', 'mazes', 'dots', 'grade-one-handwriting'];
 
 function packDelivery(id) {
   return {
@@ -33,7 +33,7 @@ const PRODUCTS = [
   {
     id: 'complete-bundle',
     name: 'KidSpark Complete Bundle',
-    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes & Join-the-Dots. Best value.',
+    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes, Join-the-Dots & Grade 1 Handwriting. Best value.',
     type: 'bundle',
     priceMinor: 60000, // KES 600  <-- PLACEHOLDER
     delivery: {
@@ -89,6 +89,14 @@ const PRODUCTS = [
     type: 'pack',
     priceMinor: 15000, // PLACEHOLDER
     delivery: packDelivery('dots'),
+  },
+  {
+    id: 'grade-one-handwriting',
+    name: 'Grade 1 Handwriting Pack',
+    description: '20 printable handwriting practice pages for confident Grade 1 writers.',
+    type: 'pack',
+    priceMinor: 15000, // KES 150
+    delivery: packDelivery('grade-one-handwriting'),
   },
 ];
 

@@ -54,10 +54,12 @@ Target file names (these match `netlify/functions/_shared/products.js`):
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. **Storage → New bucket** → name it `printables` → **uncheck "Public"** (must be private).
-3. Upload your packaged files to these exact paths inside the bucket:
-   - `bundle/kidspark-complete-bundle.zip`
-   - `packs/alphabet.pdf`, `packs/food.pdf`, `packs/fruits.pdf`,
-     `packs/wildlife.pdf`, `packs/mazes.pdf`, `packs/join-the-dots.pdf`
+3. Upload every pack to the `library/<pack-id>/` structure used by the store.
+   Each pack needs a `pages/` folder containing its individual PDFs and an
+   `<pack-id>-all.zip` file alongside it. For the Grade 1 handwriting pack,
+   upload the 20 supplied PDFs to `library/grade-one-handwriting/pages/` and
+   the complete ZIP to `library/grade-one-handwriting/grade-one-handwriting-all.zip`.
+   Keep the bucket private.
 4. **SQL Editor** → paste and run `supabase/schema.sql` from this repo.
 5. **Project Settings → API** → copy:
    - `Project URL`  → `SUPABASE_URL`
