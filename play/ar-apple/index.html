@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090c" />
+  <title>A is for Apple in AR · Kidspark × Zel XR</title>
+  <link rel="icon" href="../../images/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fredoka:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="viewer.css" />
+  <link rel="stylesheet" href="ar-viewer.css" />
+  <link rel="preload" href="assets/Red-Apple-3D.glb" as="fetch" type="model/gltf-binary" crossorigin />
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body class="zxa-body">
+<main class="zx zx-ar" id="zx" data-state="start" data-track="search" data-home="../../shop.html" data-print="assets/printables/a-is-for-apple-ar.pdf">
+
+  <!-- Start: one tap starts the camera and unlocks sound -->
+  <section class="zxa-start" id="zxa-start" aria-labelledby="zxa-start-title">
+    <div class="zxa-start__glow" aria-hidden="true"></div>
+    <header class="zxa-start__top"><a class="zxa-mark" id="zxa-home" href="../../shop.html"><b>ZEL XR</b><span>KIDSPARK · AR</span></a><span class="zxa-chip">✦ KIDSPARK</span></header>
+    <div class="zxa-start__hero"><img src="assets/apple-hero.webp" alt="" width="640" height="637" /></div>
+    <div class="zxa-start__body">
+      <p class="zxa-eyebrow">AR COLOURING PAGE</p>
+      <h1 id="zxa-start-title"><span>A</span> is for Apple</h1>
+      <ol class="zxa-steps">
+        <li><b>1</b>Lay your printed page flat in good light</li>
+        <li><b>2</b>Point the camera at the black <i>K✦</i> square</li>
+        <li><b>3</b>Watch your apple pop up, then tap it!</li>
+      </ol>
+      <button class="zxa-go" id="zxa-go" type="button"><span>Start the camera</span><i aria-hidden="true">→</i></button>
+      <a class="zxa-print" id="zxa-print" href="assets/printables/a-is-for-apple-ar.pdf" target="_blank" rel="noopener">No page yet? <b>Print it here</b> (A4, 100% size)</a>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <div class="zxa-loading" id="zxa-loading" hidden>
+    <div><i class="zxa-ring" aria-hidden="true"></i><p class="zxa-loading__text" id="zxa-loading-text">Starting the camera…</p></div>
+  </div>
+
+  <!-- No camera -->
+  <div class="zxa-fallback" id="zxa-fallback" hidden>
+    <div class="zxa-fallback__card">
+      <p class="zxa-mark"><b>ZEL XR</b><span>CAMERA AR</span></p>
+      <h1>This needs a phone camera</h1>
+      <p>Open this page on a phone in Safari or Chrome and allow camera access when asked.</p>
+      <div class="zxa-fallback__actions"><a class="zx-cta__btn" id="zxa-fallback-home" href="viewer.html">Go back</a><a class="zx-cta__btn zx-cta__btn--ghost" id="zxa-fallback-print" href="assets/printables/a-is-for-apple-ar.pdf" target="_blank" rel="noopener">Print the page</a></div>
+    </div>
+  </div>
+
+  <a class="zx-brand zxa-brand" id="zxa-brand" href="../../shop.html" aria-label="Back to Kidspark"><b>ZEL XR</b><span>KIDSPARK · AR</span></a>
+  <p class="zx-status zxa-status" id="zxa-status" role="status" aria-live="polite"><i></i><span>Looking for your page</span></p>
+
+  <!-- Scan guide -->
+  <section class="zxa-guide" id="zxa-guide" aria-label="Scanning guide">
+    <div class="zxa-reticle" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="zxa-k">K<em>✦</em></span><span class="zxa-scanline"></span></div>
+    <p class="zxa-guide__text" id="zxa-guide-text">Find the black <b>K✦</b> square on your page</p>
+    <p class="zxa-guide__sub">Hold steady · works from up to 1 m away</p>
+  </section>
+
+  <div class="zxa-found" id="zxa-found" aria-hidden="true"><span class="zxa-found__a">A</span><span><b>A is for apple!</b><small>Tap the apple</small></span></div>
+
+  <nav class="zxa-actions" id="zxa-actions" aria-label="Apple actions">
+    <button type="button" data-act="say"><span aria-hidden="true">♪</span>Say it</button>
+    <button type="button" data-act="spin" aria-pressed="false"><span aria-hidden="true">⟳</span>Spin</button>
+    <button type="button" data-act="reset"><span aria-hidden="true">◎</span>Reset</button>
+    <button type="button" data-act="sound" aria-pressed="true" aria-label="Sound on"><svg class="zxa-snd" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16 8.5c1.2 1 1.8 2.2 1.8 3.5s-.6 2.5-1.8 3.5M18.5 6c2 1.6 3 3.6 3 6s-1 4.4-3 6"/><path class="off" d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg></button>
+  </nav>
+  <p class="zxa-hint" id="zxa-hint">Drag to turn · pinch to resize · tap the apple</p>
+
+  <button class="zx-reveal" id="zx-reveal" type="button" aria-controls="zx-panel" aria-expanded="false"><span aria-hidden="true">←</span><span>Controls</span></button>
+  <button class="zx-edge" id="zx-edge" type="button" tabindex="-1" aria-label="Reveal viewer controls"></button>
+
+  <aside class="zx-panel" id="zx-panel" aria-label="Camera AR controls" aria-hidden="true" inert>
+    <header class="zx-panel__top">
+      <button class="zx-dismiss" id="zx-dismiss" type="button" aria-label="Hide controls"><span aria-hidden="true">→</span></button>
+      <h1>Red Apple</h1>
+      <i aria-hidden="true"></i>
+    </header>
+    <nav class="zx-tools" aria-label="AR tools">
+      <p>CONTROLS</p>
+      <button type="button" data-action="recenter"><span class="zx-ico zx-ico--target" aria-hidden="true"></span><span>Recenter</span><kbd>R</kbd></button>
+      <button type="button" data-action="rotate" aria-pressed="false"><span class="zx-ico zx-ico--orbit" aria-hidden="true"></span><span>Auto-rotate</span><kbd>Space</kbd></button>
+      <a href="viewer.html" id="zxa-home-link"><span class="zx-ico zx-ico--cube" aria-hidden="true"></span><span>Kidspark shop</span></a>
+      <a href="assets/printables/a-is-for-apple-ar.pdf" id="zxa-print-link" target="_blank" rel="noopener"><span class="zx-ico zx-ico--scan" aria-hidden="true"></span><span>Print the page</span></a>
+      <button type="button" data-action="settings" aria-expanded="false" aria-controls="zx-settings"><span class="zx-ico zx-ico--dial" aria-hidden="true"></span><span>Settings</span></button>
+      <button type="button" data-action="hide"><span class="zx-ico zx-ico--hide" aria-hidden="true"></span><span>Hide</span><kbd>C</kbd></button>
+    </nav>
+    <section class="zx-settings" id="zx-settings" hidden>
+      <label><input id="zx-motion" type="checkbox" /> Reduce motion</label>
+      <label><input id="zx-dim" type="checkbox" /> Dim interface</label>
+    </section>
+    <section class="zx-hints">
+      <p>HINTS &amp; MESSAGES</p>
+      <div><span aria-hidden="true">⌁</span><b id="zx-message" role="status" aria-live="polite">Hold the page flat and steady</b></div>
+      <small>Reads the K✦ square from up to 1 m. Print at 100% scale.</small>
+    </section>
+  </aside>
+</main>
+
+<!-- The AR scene is created when the camera starts, so nothing runs before the tap. -->
+<template id="zxa-scene">
+  <a-scene embedded vr-mode-ui="enabled: false" loading-screen="enabled: false" device-orientation-permission-ui="enabled: false"
+    renderer="alpha: true; antialias: true; colorManagement: true; precision: mediump; toneMapping: ACESFilmic; exposure: 1.05"
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; cameraParametersUrl: assets/ar/camera_para.dat; maxDetectionRate: 60">
+    <a-entity light="type: hemisphere; color: #ffffff; groundColor: #6b5a4a; intensity: 0.9"></a-entity>
+    <a-entity light="type: directional; color: #fff6ea; intensity: 1.5" position="0.6 3 2"></a-entity>
+    <a-entity light="type: directional; color: #cfe8ff; intensity: 0.5" position="-2 1.5 -1"></a-entity>
+    <!-- Anchor: the 66 mm K✦ square on the A is for Apple page. 1 unit = the square's width;
+         the page lies in the X/Z plane with +Z toward its bottom edge. The picture frame's
+         centre is 0.848 units left of and 1.682 units above the square's centre.
+         The marker only reports the pose; #zxa-follow eases toward it so the apple stays calm. -->
+    <a-marker type="pattern" url="assets/ar/kidspark.patt" id="zxa-anchor" emitevents="true"
+      smooth="true" smooth-count="4" smooth-tolerance="0.01" smooth-threshold="3"></a-marker>
+    <a-entity id="zxa-follow" zx-follow="target: #zxa-anchor">
+      <a-entity id="zxa-page" position="-0.848 0 -1.682">
+        <a-entity id="zxa-pose" zx-object="src: assets/Red-Apple-3D.glb; height: 1.55">
+          <a-entity id="zxa-model"></a-entity>
+        </a-entity>
+      </a-entity>
+    </a-entity>
+    <a-entity camera></a-entity>
+  </a-scene>
+</template>
+<script src="ar-viewer.js"></script>
+</body>
+</html>
