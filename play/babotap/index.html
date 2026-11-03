@@ -133,31 +133,43 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 @keyframes say{40%{transform:translateY(-12px) scale(1.1)}}
 
 /* bubbles */
-.bubble{position:absolute;left:0;top:0;border-radius:50%;will-change:transform;touch-action:manipulation;user-select:none;-webkit-user-select:none}
-.bubble .skin{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;font:700 var(--fs)/1 var(--f-letter);color:var(--navy);text-shadow:0 2px 0 rgba(255,255,255,.75);
+.bubble{position:absolute;left:0;top:0;border-radius:50%;will-change:transform;touch-action:manipulation;user-select:none;-webkit-user-select:none;transform-origin:50% 50%;cursor:pointer}
+.bubble .skin{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;overflow:hidden;
   background:
-    radial-gradient(circle at 30% 25%,rgba(255,255,255,.96) 0 7%,rgba(255,255,255,0) 15%),
-    radial-gradient(circle at 70% 80%,rgba(255,255,255,.6) 0 3.5%,rgba(255,255,255,0) 8%),
-    radial-gradient(circle at 50% 48%,var(--b1) 0 50%,var(--b2) 80%,rgba(255,255,255,.92) 100%);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.8),inset -8px -10px 22px var(--b3),0 8px 18px rgba(30,33,43,.1)}
+    radial-gradient(circle at 50% 50%,var(--b1) 0 44%,var(--b2) 72%,rgba(255,255,255,.95) 98%);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.9),inset -10px -13px 24px var(--b3),inset 9px 11px 18px rgba(255,255,255,.45),0 12px 22px -6px rgba(30,33,43,.22),0 2px 0 rgba(255,255,255,.6)}
+/* soap-film shimmer around the rim */
+.bubble .skin::before{content:"";position:absolute;inset:-2px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from var(--hue,0deg),rgba(255,120,190,.38),rgba(120,190,255,.34),rgba(140,240,170,.32),rgba(255,226,110,.38),rgba(255,140,90,.32),rgba(255,120,190,.38));
+  -webkit-mask:radial-gradient(circle,transparent 56%,#000 71%,#000 100%);mask:radial-gradient(circle,transparent 56%,#000 71%,#000 100%);
+  opacity:.85;animation:film 7s linear infinite}
+/* glossy window highlight + sparkle dot, drawn over the letter */
+.bubble .skin::after{content:"";position:absolute;left:17%;top:11%;width:36%;height:22%;border-radius:50%;pointer-events:none;z-index:2;
+  background:radial-gradient(ellipse at 40% 40%,rgba(255,255,255,.95),rgba(255,255,255,.35) 55%,rgba(255,255,255,0) 72%);transform:rotate(-30deg);
+  box-shadow:calc(var(--fs) * 1.02) calc(var(--fs) * .98) 0 calc(var(--fs) * -.075) rgba(255,255,255,.55)}
+.bubble .ch{position:relative;z-index:1;font:700 var(--fs)/1 var(--f-letter);color:var(--navy);text-shadow:0 2px 0 rgba(255,255,255,.8),0 0 10px rgba(255,255,255,.55)}
+@keyframes film{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.bubble .skin::before{animation:none}}
 .c-o{--b1:rgba(255,224,186,.78);--b2:rgba(255,184,110,.8);--b3:rgba(255,148,39,.3)}
 .c-y{--b1:rgba(255,241,186,.8);--b2:rgba(255,220,92,.8);--b3:rgba(255,190,0,.28)}
 .c-g{--b1:rgba(219,239,200,.8);--b2:rgba(160,206,124,.8);--b3:rgba(77,155,49,.26)}
-.bubble.enter .skin{animation:bIn .45s cubic-bezier(.3,1.5,.5,1)}
-@keyframes bIn{from{transform:scale(.35);opacity:0}}
+.bubble.enter .skin{animation:bIn .6s cubic-bezier(.25,1.6,.45,1)}
+@keyframes bIn{0%{transform:scale(.2);opacity:0}55%{transform:scale(1.12,.9);opacity:1}75%{transform:scale(.95,1.06)}100%{transform:none}}
 .bubble.leave{pointer-events:none}
 .bubble.leave .skin{animation:bOut .4s ease forwards}
-@keyframes bOut{to{transform:scale(.6);opacity:0}}
+@keyframes bOut{to{transform:translateY(-35%) scale(.55);opacity:0}}
 .bubble.popping{pointer-events:none}
-.bubble.popping .skin{animation:popOut .2s ease-out forwards}
-@keyframes popOut{to{transform:scale(1.4);opacity:0}}
+.bubble.popping .skin{animation:popOut .2s cubic-bezier(.2,.8,.3,1) forwards}
+.bubble.popping .ch{opacity:0}
+@keyframes popOut{0%{transform:scale(1)}35%{transform:scale(1.18,1.1);opacity:1}100%{transform:scale(1.55);opacity:0}}
 .bubble.nope .skin{animation:nope .5s ease}
 @keyframes nope{20%{transform:rotate(-9deg) translateX(-6%)}45%{transform:rotate(8deg) translateX(5%)}70%{transform:rotate(-4deg)}100%{transform:none}}
 .bubble.hint{z-index:2}
 .bubble.hint .skin{box-shadow:0 0 0 4px var(--yellow),0 0 0 7px var(--navy),0 0 30px 10px rgba(255,203,0,.55),inset 0 0 0 2px rgba(255,255,255,.8);animation:hintPulse 1.2s ease-in-out infinite}
 @keyframes hintPulse{50%{transform:scale(1.09)}}
-.drop{position:fixed;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;pointer-events:none;z-index:45}
-.ring{position:fixed;left:0;top:0;border-radius:50%;border:3px solid rgba(255,255,255,.95);pointer-events:none;z-index:45}
+.drop{position:fixed;left:0;top:0;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;pointer-events:none;z-index:45;box-shadow:inset -1px -2px 3px rgba(0,0,0,.08),inset 1px 1px 2px rgba(255,255,255,.9)}
+.spark{position:fixed;left:0;top:0;margin:-9px 0 0 -9px;width:18px;height:18px;pointer-events:none;z-index:46;color:#FFCB00;font:700 18px/18px sans-serif;text-align:center;text-shadow:0 0 6px rgba(255,203,0,.6)}
+.ring{position:fixed;left:0;top:0;border-radius:50%;border:3px solid rgba(255,255,255,.95);pointer-events:none;z-index:45;box-shadow:0 0 0 2px rgba(120,190,255,.35),0 0 18px rgba(255,203,0,.45),inset 0 0 12px rgba(255,120,190,.35)}
 .flyer{position:fixed;left:0;top:0;z-index:46;pointer-events:none;font:700 40px/1 var(--f-letter);color:var(--navy);text-shadow:0 3px 0 #fff,0 8px 18px rgba(30,33,43,.2)}
 
 /* ---------------- dialogs ---------------- */
@@ -260,6 +272,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .confirm p{margin:0 0 10px;font:600 1rem/1.4 var(--f-body);color:var(--navy)}
 .btn-danger{background:var(--navy);color:#fff}
 .small{font:400 .9rem/1.4 var(--f-body);color:var(--muted)}
+.report-box{margin-top:8px;padding:16px;border-radius:20px;background:var(--cream-2);display:grid;gap:10px}
+.report-box label{font:700 .95rem var(--f-body);color:var(--navy)}
+.report-box input{width:100%;min-height:48px;padding:0 14px;border-radius:14px;border:1.5px solid rgba(30,33,43,.14);background:#fff;font:400 1rem var(--f-body);color:var(--ink)}
+.report-box input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,148,39,.16)}
+.report-box .actions{display:flex;flex-wrap:wrap;gap:10px}
+.report-box .btn{min-height:50px;font-size:1.05rem}
+.report-box .small{margin:0}
 #confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:70}
 
 @media (max-width:420px){
@@ -736,13 +755,22 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
     <div class="sheet adult-sheet" role="dialog" aria-modal="true" aria-labelledby="adTitle">
       <button class="x" id="adClose" aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
       <h2 id="adTitle">For grown-ups</h2>
-      <p class="note">Babotap works best with a grown-up nearby. Say the sounds together, point to the letters, and help with tracing if a child gets stuck. There are no accounts and nothing is sent anywhere. Progress is saved only in this browser.</p>
+      <p class="note">Babotap works best with a grown-up nearby. Say the sounds together, point to the letters, and help with tracing if a child gets stuck. There are no accounts and nothing is sent anywhere unless you choose to email yourself a progress report. Progress is saved only in this browser.</p>
       <div class="set-row"><div><b>Sound</b><small>Letter sounds, voice and effects.</small></div><button class="switch" role="switch" id="swSound" aria-checked="true" aria-label="Sound"><span class="state">On</span><span class="knob"></span></button></div>
       <div class="set-row"><div><b>Still bubbles</b><small id="stillNote">Bubbles stay in place instead of drifting.</small></div><button class="switch" role="switch" id="swStill" aria-checked="false" aria-label="Still bubbles"><span class="state">Off</span><span class="knob"></span></button></div>
       <div class="set-row"><div><b>Tracing help</b><small>Shows a “Help me finish” button while tracing.</small></div><button class="switch" role="switch" id="swAssist" aria-checked="false" aria-label="Tracing help"><span class="state">Off</span><span class="knob"></span></button></div>
       <h3>Progress</h3>
       <ul class="prog-list" id="progList"></ul>
       <p class="small" id="storeNote"></p>
+      <h3>Progress report</h3>
+      <div class="report-box">
+        <label for="repName">Child's name <span class="small">(optional, for the report)</span></label>
+        <input id="repName" maxlength="40" autocomplete="off" placeholder="e.g. Amani">
+        <label for="repEmail">Your email <span class="small">(optional, for "Email it to me")</span></label>
+        <input id="repEmail" type="email" maxlength="120" autocomplete="email" placeholder="you@example.com">
+        <div class="actions"><button class="btn btn-primary" id="repSave">Save PDF</button><button class="btn btn-soft" id="repSend">Email it to me</button></div>
+        <p class="small" id="repNote">The report is made on this device. Nothing is uploaded.</p>
+      </div>
       <div class="danger-zone">
         <button class="btn btn-soft" id="resetAsk">Reset progress…</button>
         <div class="confirm" id="resetConfirm" hidden>
@@ -824,7 +852,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const KEY2 = 'babotap.v2', KEY1 = 'babotap.v1';
 let storageOK = true;
 function freshProgress(settings) {
-  return {v:2, letters:[], words:{2:0,3:0,4:0,5:0,6:0}, last:null, celebrated:{}, settings: settings || {sound:true, still:false, assist:false}};
+  return {v:2, letters:[], words:{2:0,3:0,4:0,5:0,6:0}, last:null, celebrated:{}, settings: settings || {sound:true, still:false, assist:false}, stats:{first:null, last:null, days:[], pops:0, traces:0}, child:''};
 }
 function normalize(p) {
   const n = freshProgress();
@@ -836,6 +864,12 @@ function normalize(p) {
   const s = p.settings || {};
   n.settings = {sound: s.sound !== false, still: !!s.still, assist: !!s.assist};
   if (p.legacyL1) n.legacyL1 = p.legacyL1;
+  const st = (p.stats && typeof p.stats === 'object') ? p.stats : {};
+  const dOK = d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d);
+  n.stats = {first: dOK(st.first) ? st.first : null, last: dOK(st.last) ? st.last : null,
+    days: Array.isArray(st.days) ? [...new Set(st.days.filter(dOK))].slice(-400) : [],
+    pops: Math.max(0, parseInt(st.pops, 10) || 0), traces: Math.max(0, parseInt(st.traces, 10) || 0)};
+  n.child = typeof p.child === 'string' ? p.child.slice(0, 40) : '';
   return n;
 }
 function loadProgress() {
@@ -854,6 +888,13 @@ function loadProgress() {
   return n;
 }
 let P = loadProgress();
+function todayISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
+function markPlayed() {
+  const t = todayISO(), st = P.stats;
+  if (!st.first) st.first = t;
+  st.last = t;
+  if (!st.days.includes(t)) { st.days.push(t); if (st.days.length > 400) st.days.shift(); }
+}
 function save() {
   try { localStorage.setItem(KEY2, JSON.stringify(P)); storageOK = true; } catch (e) { storageOK = false; }
 }
@@ -879,16 +920,33 @@ function tone(freq, t0, dur, {type = 'sine', gain = .2, to = null} = {}) {
   g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(gain, t0 + .01); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
   o.connect(g).connect(c.destination); o.start(t0); o.stop(t0 + dur + .02);
 }
-function popSound() {
+function popSound(size = 80) {
   const c = ac(); if (!c || !soundOn()) return; const t = c.currentTime;
-  tone(rand(760, 980), t, .1, {gain:.35, to:180});
-  const len = Math.floor(c.sampleRate * .045), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2);
+  const k = clamp(80 / size, .75, 1.35) * rand(.92, 1.08);           // smaller bubbles pop higher
+  // 1. the "plop": a quick rising water-drop tone
+  tone(340 * k, t, .09, {gain: .32, to: 1250 * k});
+  tone(1250 * k, t + .05, .07, {gain: .08, to: 900 * k});
+  // 2. the film tearing: a short, bright noise burst through a resonant band-pass
+  const len = Math.floor(c.sampleRate * .06), buf = c.createBuffer(1, len, c.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
   const n = c.createBufferSource(); n.buffer = buf;
-  const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 1800;
-  const g = c.createGain(); g.gain.value = .25; n.connect(f).connect(g).connect(c.destination); n.start(t);
+  const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2600 * k; f.Q.value = 1.4;
+  const g = c.createGain(); g.gain.value = .55; n.connect(f).connect(g).connect(c.destination); n.start(t);
+  // 3. a tiny sparkle on top
+  tone(1568 * k, t + .04, .18, {type: 'triangle', gain: .035});
+  tone(2349 * k, t + .07, .2, {type: 'triangle', gain: .025});
 }
-const boop = () => { const c = ac(); if (c) tone(260, c.currentTime, .2, {type:'triangle', gain:.16, to:170}); };
+// soft rubbery "boing" when bubbles bump; quiet, and rate-limited so it never gets noisy
+let lastBounceAt = 0;
+function bounceSound(strength, size = 80) {
+  const c = actx; if (!c || !soundOn() || c.state !== 'running') return;
+  const now = performance.now(); if (now - lastBounceAt < 90) return; lastBounceAt = now;
+  const t = c.currentTime, k = clamp(80 / size, .8, 1.3) * rand(.94, 1.06), g = clamp(strength, 0, 1) * .05;
+  if (g < .006) return;
+  tone(300 * k, t, .14, {gain: g, to: 190 * k});
+  tone(600 * k, t, .06, {type: 'triangle', gain: g * .35, to: 420 * k});
+}
+const boop = () => { const c = ac(); if (!c) return; const t = c.currentTime; tone(260, t, .14, {type:'triangle', gain:.16, to:200}); tone(220, t + .1, .2, {type:'triangle', gain:.12, to:150}); };
 const tick = p => { const c = ac(); if (c) tone(560 + p * 700, c.currentTime, .06, {gain:.05}); };
 const chime = () => { const c = ac(); if (!c) return; const t = c.currentTime; [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * .09, .32, {gain:.13})); };
 const fanfare = () => { const c = ac(); if (!c) return; const t = c.currentTime; [392, 523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * .12, .4, {gain:.13})); };
@@ -1089,7 +1147,7 @@ function showScreen(which) {
 function startLevel(n) {
   unlock(); hush(); S.session++; closeAllDialogs();
   S.level = LEVELS[n - 1]; S.paused = false; S.busy = false;
-  P.last = n; save();
+  P.last = n; markPlayed(); save();
   showScreen('game');
   $('#gTitle').textContent = S.level.title;
   clearBubbles();
@@ -1143,9 +1201,12 @@ function spawnBubble(ch, {force = false} = {}) {
   el.setAttribute('aria-label', ch === ch.toUpperCase() ? `Capital letter ${ch}` : `Letter ${ch}`);
   el.style.width = el.style.height = d + 'px';
   el.style.setProperty('--fs', (d * .56) + 'px');
-  el.innerHTML = `<span class="skin" aria-hidden="true">${ch}</span>`;
-  const b = {ch, el, x: pos.x, y: pos.y, r, th: rand(0, Math.PI * 2), sp: rand(.22, .4), age: 0, dead: false, leaving: false};
-  el.style.transform = `translate3d(${(b.x - r).toFixed(1)}px,${(b.y - r).toFixed(1)}px,0)`;
+  el.innerHTML = `<span class="skin" aria-hidden="true"><span class="ch">${ch}</span></span>`;
+  el.style.setProperty('--hue', Math.floor(rand(0, 360)) + 'deg');
+  const th = rand(0, Math.PI * 2), sp = rand(.3, .52);
+  const b = {ch, el, x: pos.x, y: pos.y, r, th, sp, vx: Math.cos(th) * sp, vy: Math.sin(th) * sp - .6, wa: th,
+    sq: 0, sqv: 0, sqa: 0, ph: rand(0, 6.28), age: 0, dead: false, leaving: false, lastBump: 0};
+  renderBubble(b, 0);
   el.addEventListener('pointerdown', e => { if (e.button > 0) return; e.preventDefault(); onBubble(b); });
   el.addEventListener('click', e => { if (e.detail === 0) onBubble(b); });  // keyboard Enter / Space
   el.addEventListener('animationend', () => el.classList.remove('enter'), {once: true});
@@ -1168,32 +1229,73 @@ function loop(t) {
   if (!frozen() && S.mode) { step(dtMs / 16.67); maintenance(dtMs); }
   requestAnimationFrame(loop);
 }
+// Physics: each bubble has a velocity and a gentle wandering push. Bubbles bounce off each other and
+// the walls (elastic, slightly soft), squash on impact and wobble back like jelly.
+const MAX_SP = 2.2;
+function squash(b, ang, amt) { if (reduceMotion) return; b.sqa = ang; b.sqv = clamp(b.sqv - amt * 1.1, -.09, .09); }
+function renderBubble(b, tNow) {
+  const breathe = reduceMotion ? 0 : Math.sin(tNow / 900 + b.ph) * .018;
+  const s = clamp(b.sq, -.13, .13), a = b.sqa;
+  b.el.style.transform = `translate3d(${(b.x - b.r).toFixed(1)}px,${(b.y - b.r).toFixed(1)}px,0) rotate(${a.toFixed(3)}rad) scale(${(1 + s + breathe).toFixed(3)},${(1 - s + breathe).toFixed(3)}) rotate(${(-a).toFixed(3)}rad)`;
+}
 function step(dt) {
-  const bs = S.bubbles, still = stillMode();
+  const bs = S.bubbles, still = stillMode(), now = performance.now();
   for (const b of bs) {
     b.age += dt * 16.67;
     if (!still) {
-      b.th += (Math.random() - .5) * .07 * dt;
-      const sp = b.sp * (b.el.classList.contains('hint') ? .3 : 1);
-      b.x += Math.cos(b.th) * sp * dt; b.y += Math.sin(b.th) * sp * dt;
+      b.wa += (Math.random() - .5) * .16 * dt;                       // slowly turning "current"
+      b.vx += Math.cos(b.wa) * .018 * dt; b.vy += Math.sin(b.wa) * .018 * dt;
+      const target = b.sp * (b.el.classList.contains('hint') ? .3 : 1), v = Math.hypot(b.vx, b.vy) || .001;
+      const adj = 1 + (target - v) / v * .035 * dt;                    // ease back toward a calm cruising speed
+      b.vx *= adj; b.vy *= adj;
+      if (v > MAX_SP) { b.vx *= MAX_SP / v; b.vy *= MAX_SP / v; }
+      b.x += b.vx * dt; b.y += b.vy * dt;
     }
+    // jelly spring for squash-and-stretch
+    b.sqv += (-0.22 * b.sq - 0.2 * b.sqv) * dt; b.sq += b.sqv * dt;
+    if (Math.abs(b.sq) < .0005 && Math.abs(b.sqv) < .0005) b.sq = b.sqv = 0;
   }
   for (let i = 0; i < bs.length; i++) for (let j = i + 1; j < bs.length; j++) {
-    const a = bs[i], c = bs[j], min = a.r + c.r + 10, dx = c.x - a.x, dy = c.y - a.y;
+    const a = bs[i], c = bs[j], min = a.r + c.r + (still ? 10 : 2), dx = c.x - a.x, dy = c.y - a.y;
     if (Math.abs(dx) > min || Math.abs(dy) > min) continue;
     const d = Math.hypot(dx, dy);
     if (d < min && d > .01) {
-      const nx = dx / d, ny = dy / d, push = (min - d) * .5 * (still ? .5 : .25);
+      const nx = dx / d, ny = dy / d, overlap = min - d;
+      const push = overlap * (still ? .25 : .5);
       a.x -= nx * push; a.y -= ny * push; c.x += nx * push; c.y += ny * push;
-      if (!still) { a.th = Math.atan2(-ny, -nx) + rand(-.4, .4); c.th = Math.atan2(ny, nx) + rand(-.4, .4); }
+      if (!still) {
+        const rel = (c.vx - a.vx) * nx + (c.vy - a.vy) * ny;          // closing speed along the normal
+        if (rel < 0) {
+          const jimp = -(1 + .92) * rel / 2;                             // equal masses, restitution .92
+          a.vx -= jimp * nx; a.vy -= jimp * ny; c.vx += jimp * nx; c.vy += jimp * ny;
+          const hit = -rel, ang = Math.atan2(ny, nx);
+          squash(a, ang, hit * .05); squash(c, ang, hit * .05);
+          if (hit > .35 && now - a.lastBump > 160 && now - c.lastBump > 160) { a.lastBump = c.lastBump = now; bounceSound(hit / 2, (a.r + c.r)); }
+        }
+      }
     }
   }
   for (const b of bs) {
-    if (b.x < b.r) { b.x = b.r; b.th = Math.PI - b.th; }
-    if (b.x > S.W - b.r) { b.x = S.W - b.r; b.th = Math.PI - b.th; }
-    if (b.y < b.r) { b.y = b.r; b.th = -b.th; }
-    if (b.y > S.H - b.r) { b.y = S.H - b.r; b.th = -b.th; }
-    b.el.style.transform = `translate3d(${(b.x - b.r).toFixed(1)}px,${(b.y - b.r).toFixed(1)}px,0)`;
+    let hitN = null, hit = 0;
+    if (b.x < b.r) { b.x = b.r; if (b.vx < 0) { hit = -b.vx; b.vx = -b.vx * .85; hitN = 0; } }
+    if (b.x > S.W - b.r) { b.x = S.W - b.r; if (b.vx > 0) { hit = b.vx; b.vx = -b.vx * .85; hitN = 0; } }
+    if (b.y < b.r) { b.y = b.r; if (b.vy < 0) { hit = -b.vy; b.vy = -b.vy * .85; hitN = Math.PI / 2; } }
+    if (b.y > S.H - b.r) { b.y = S.H - b.r; if (b.vy > 0) { hit = b.vy; b.vy = -b.vy * .85; hitN = Math.PI / 2; } }
+    if (hitN !== null && !still) {
+      b.wa += Math.PI * rand(.6, 1.4);                                  // turn the current away from the wall
+      squash(b, hitN, hit * .05);
+      if (hit > .5 && now - b.lastBump > 200) { b.lastBump = now; bounceSound(hit / 3, b.r * 2); }
+    }
+    renderBubble(b, now);
+  }
+}
+// A tap on empty water sends a ripple that nudges nearby bubbles away.
+function ripple(px, py) {
+  if (stillMode()) return;
+  for (const b of S.bubbles) {
+    if (b.dead) continue;
+    const dx = b.x - px, dy = b.y - py, d = Math.hypot(dx, dy), R = 170;
+    if (d < R && d > .01) { const f = (1 - d / R) * 2.4; b.vx += dx / d * f; b.vy += dy / d * f; squash(b, Math.atan2(dy, dx), f * .06); }
   }
 }
 // Level 1: gently swap a long-visible bubble for the next waiting letter, so every letter gets its turn.
@@ -1213,17 +1315,38 @@ function maintenance(dtMs) {
 function burst(b) {
   const fr = field.getBoundingClientRect(), cx = fr.left + b.x, cy = fr.top + b.y;
   b.el.classList.remove('hint'); b.el.classList.add('popping'); removeBubble(b);
-  popSound();
+  popSound(b.r * 2); P.stats.pops++;
+  try { if (navigator.vibrate && !reduceMotion) navigator.vibrate(12); } catch (e) {}
+  if (!stillMode()) for (const o of S.bubbles) {                      // the pop pushes neighbours away
+    const dx = o.x - b.x, dy = o.y - b.y, d = Math.hypot(dx, dy), R = b.r * 4.5;
+    if (d < R && d > .01) { const f = (1 - d / R) * 3.2; o.vx += dx / d * f; o.vy += dy / d * f; squash(o, Math.atan2(dy, dx), f * .07); }
+  }
   if (reduceMotion) return;
+  const st = getComputedStyle(b.el), c1 = st.getPropertyValue('--b2').trim() || '#FFB86A', c2 = st.getPropertyValue('--b1').trim() || '#FFE3C4';
   const ring = document.createElement('div'); ring.className = 'ring'; ring.style.width = ring.style.height = b.r * 2 + 'px';
   document.body.appendChild(ring);
-  ring.animate([{transform: `translate(${cx - b.r}px,${cy - b.r}px) scale(.9)`, opacity: 1}, {transform: `translate(${cx - b.r}px,${cy - b.r}px) scale(1.6)`, opacity: 0}], {duration: 360, easing: 'ease-out'}).finished.then(() => ring.remove());
-  const cols = ['#FFB86A', '#FFD84D', '#9CCB7E', '#FFE3C4'];
-  for (let i = 0; i < 9; i++) {
-    const d = document.createElement('div'); d.className = 'drop'; d.style.background = cols[i % cols.length];
-    const a = i / 9 * Math.PI * 2 + rand(-.2, .2), dist = b.r * rand(1.1, 1.8);
+  ring.animate([{transform: `translate(${cx - b.r}px,${cy - b.r}px) scale(.85)`, opacity: 1}, {transform: `translate(${cx - b.r}px,${cy - b.r}px) scale(1.75)`, opacity: 0}], {duration: 420, easing: 'cubic-bezier(.1,.7,.3,1)'}).finished.then(() => ring.remove());
+  // droplets fly out and fall with a little gravity
+  const n = 14;
+  for (let i = 0; i < n; i++) {
+    const d = document.createElement('div'); d.className = 'drop';
+    const sz = rand(5, 12); d.style.width = d.style.height = sz + 'px'; d.style.margin = `${-sz / 2}px 0 0 ${-sz / 2}px`;
+    d.style.background = `radial-gradient(circle at 35% 30%,#fff 0 18%,${i % 2 ? c1 : c2} 45%,${c1} 100%)`;
+    const a = i / n * Math.PI * 2 + rand(-.25, .25), dist = b.r * rand(1.1, 2.1), dur = rand(480, 700);
+    const ex = cx + Math.cos(a) * dist, ey = cy + Math.sin(a) * dist;
     document.body.appendChild(d);
-    d.animate([{transform: `translate(${cx}px,${cy}px) scale(1)`, opacity: 1}, {transform: `translate(${cx + Math.cos(a) * dist}px,${cy + Math.sin(a) * dist}px) scale(0)`, opacity: 0}], {duration: rand(380, 520), easing: 'cubic-bezier(.2,.7,.4,1)'}).finished.then(() => d.remove());
+    d.animate([
+      {transform: `translate(${cx}px,${cy}px) scale(1)`, opacity: 1},
+      {transform: `translate(${cx + Math.cos(a) * dist * .7}px,${cy + Math.sin(a) * dist * .7 - 6}px) scale(.9)`, opacity: 1, offset: .45},
+      {transform: `translate(${ex}px,${ey + 26}px) scale(.2)`, opacity: 0}
+    ], {duration: dur, easing: 'cubic-bezier(.2,.7,.4,1)'}).finished.then(() => d.remove());
+  }
+  // a few sparkles
+  for (let i = 0; i < 4; i++) {
+    const sp = document.createElement('div'); sp.className = 'spark'; sp.textContent = '\u2726';
+    const a = rand(0, Math.PI * 2), dist = b.r * rand(.8, 1.5), rot = rand(-120, 120);
+    document.body.appendChild(sp);
+    sp.animate([{transform: `translate(${cx}px,${cy}px) scale(.2) rotate(0deg)`, opacity: 0}, {transform: `translate(${cx + Math.cos(a) * dist * .6}px,${cy + Math.sin(a) * dist * .6}px) scale(1.1) rotate(${rot / 2}deg)`, opacity: 1, offset: .35}, {transform: `translate(${cx + Math.cos(a) * dist}px,${cy + Math.sin(a) * dist}px) scale(.3) rotate(${rot}deg)`, opacity: 0}], {duration: rand(520, 720), easing: 'ease-out', delay: i * 30}).finished.then(() => sp.remove());
   }
 }
 function flyTo(b, x1, y1, size) {
@@ -1237,6 +1360,10 @@ function flyTo(b, x1, y1, size) {
     {duration: reduceMotion ? 10 : 760, easing: 'ease-in-out', fill: 'forwards'});
   return anim.finished.catch(() => {}).then(() => el.remove());
 }
+field.addEventListener('pointerdown', e => {
+  if (e.target.closest('.bubble') || frozen()) return;
+  const r = field.getBoundingClientRect(); ripple(e.clientX - r.left, e.clientY - r.top);
+});
 function onBubble(b) {
   if (b.dead || b.leaving || stack.length || S.paused || S.busy || game.hidden) return;
   unlock();
@@ -1457,6 +1584,7 @@ async function popWord(b) {
   const need = S.word[S.pos];
   if (b.ch !== need) {
     b.el.classList.remove('nope'); void b.el.offsetWidth; b.el.classList.add('nope'); boop();
+    squash(b, 0, .5); b.vx += rand(-1.2, 1.2); b.vy -= 1;
     S.misses++;
     if (S.misses >= 2) S.bubbles.filter(o => o.ch === need && !o.dead).forEach(o => o.el.classList.add('hint'));
     return;
@@ -1587,6 +1715,7 @@ function updateMeter(silent) {
 function finishTrace() {
   if (T.done) return;
   T.done = true; T.doneAt = performance.now(); T.cur = null;
+  P.stats.traces++; save();
   $('#trMeter').style.width = '100%'; $('#trMeterWrap').setAttribute('aria-valuenow', '100');
   chime();
   const r = T.resolve;
@@ -1682,9 +1811,164 @@ function renderAdult() {
   if (P.legacyL1) note += ` An earlier version recorded ${P.legacyL1} letters found but not which ones, so letter progress started again.`;
   $('#storeNote').textContent = note;
   $('#resetConfirm').hidden = true; $('#resetAsk').hidden = false;
+  $('#repName').value = P.child || '';
+  try { $('#repEmail').value = localStorage.getItem('babotap.reportEmail') || ''; } catch (e) {}
+  repNote('The report is made on this device. Nothing is uploaded.');
 }
 function openAdult(ret) { renderAdult(); openDlg($('#adultDlg'), {initial: '#adClose', returnFocus: ret}); }
 $('#adClose').addEventListener('click', () => closeDlg($('#adultDlg')));
+
+/* =====================================================================
+   progress report (PDF) — made on this device with jsPDF
+   ===================================================================== */
+const JSPDF_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+let jspdfP = null;
+function loadJsPDF() {
+  if (window.jspdf) return Promise.resolve(window.jspdf);
+  if (!jspdfP) jspdfP = new Promise((res, rej) => {
+    const sc = document.createElement('script'); sc.src = JSPDF_URL; sc.async = true;
+    sc.onload = () => window.jspdf ? res(window.jspdf) : rej(new Error('jsPDF missing'));
+    sc.onerror = () => { jspdfP = null; rej(new Error('Could not load the PDF maker')); };
+    document.head.appendChild(sc);
+  });
+  return jspdfP;
+}
+function logoPNG() {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => { try { const c = document.createElement('canvas'); c.width = c.height = 256; c.getContext('2d').drawImage(img, 0, 0, 256, 256); res(c.toDataURL('image/png')); } catch (e) { res(null); } };
+    img.onerror = () => res(null);
+    img.src = ASSET.logo;
+  });
+}
+const fmtDate = iso => { if (!iso) return '-'; const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'}); };
+function reportData() {
+  const name = (P.child || '').trim();
+  const letters = new Set(P.letters);
+  const wordsDone = LEVELS.filter(L => L.kind !== 'letters').map(L => ({L, done: L.words.slice(0, P.words[L.n]).map(x => x.w)}));
+  const totalWords = wordsDone.reduce((a, x) => a + x.done.length, 0);
+  const missingLower = ALPHA.filter(c => !letters.has(c)), missingUpper = UPPER.filter(c => !letters.has(c));
+  const nx = nextActivity();
+  return {name, letters, wordsDone, totalWords, missingLower, missingUpper, nx, st: P.stats};
+}
+async function buildReport() {
+  const [{jsPDF}, logo] = await Promise.all([loadJsPDF(), logoPNG()]);
+  const R = reportData(), doc = new jsPDF({unit: 'mm', format: 'a4'});
+  const W = 210, M = 16, navy = [30, 33, 43], orange = [255, 148, 39], green = [77, 155, 49], muted = [91, 93, 107], cream = [255, 243, 224];
+  const who = R.name || 'Your child', today = fmtDate(todayISO());
+  // header band
+  doc.setFillColor(...cream); doc.rect(0, 0, W, 40, 'F');
+  doc.setFillColor(...orange); doc.rect(0, 40, W, 1.6, 'F');
+  if (logo) doc.addImage(logo, 'PNG', M, 8, 24, 24);
+  doc.setTextColor(...navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.text('Babotap progress report', M + 30, 19);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...muted);
+  doc.text('Kidspark  |  Little pops. Big discoveries.', M + 30, 27);
+  doc.text(`Made on ${today}`, M + 30, 33);
+  let y = 54;
+  doc.setTextColor(...navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+  doc.text(R.name ? `${R.name}'s learning so far` : 'Learning so far', M, y); y += 8;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11.5); doc.setTextColor(...muted);
+  const sum = `${who} has met ${R.letters.size} of 52 letters and spelled ${R.totalWords} of 100 words.`;
+  doc.text(doc.splitTextToSize(sum, W - 2 * M), M, y); y += 7;
+  const days = R.st.days.length;
+  doc.text(`Days played: ${days}    First played: ${fmtDate(R.st.first)}    Last played: ${fmtDate(R.st.last)}`, M, y); y += 6;
+  doc.text(`Bubbles popped: ${R.st.pops}    Letters traced: ${R.st.traces}`, M, y); y += 10;
+  // activities with progress bars
+  doc.setTextColor(...navy); doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.text('Activities', M, y); y += 6;
+  for (const L of LEVELS) {
+    const done = levelDone(L.n), total = levelTotal(L.n), frac = clamp(done / total, 0, 1);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...navy);
+    doc.text(`${L.n}. ${L.title}`, M, y + 4);
+    const bx = M + 70, bw = W - M - bx - 24;
+    doc.setFillColor(238, 231, 218); doc.roundedRect(bx, y, bw, 5.5, 2.75, 2.75, 'F');
+    if (frac > 0) { doc.setFillColor(...(frac >= 1 ? green : orange)); doc.roundedRect(bx, y, Math.max(5.5, bw * frac), 5.5, 2.75, 2.75, 'F'); }
+    doc.setFont('helvetica', 'bold'); doc.text(`${done}/${total}`, W - M, y + 4.3, {align: 'right'});
+    y += 8;
+  }
+  y += 6;
+  // letters grid
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...navy); doc.text('Letters met', M, y);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(...muted);
+  doc.text('Green = met in the game. Outline = not met yet.', W - M, y, {align: 'right'}); y += 4;
+  const cell = 11.6;
+  const grid = (arr) => {
+    arr.forEach((ch, i) => {
+      const cxp = M + (i % 13) * cell, cyp = y + Math.floor(i / 13) * cell;
+      const got = R.letters.has(ch);
+      if (got) { doc.setFillColor(...green); doc.roundedRect(cxp + .8, cyp + .8, cell - 1.6, cell - 1.6, 2, 2, 'F'); doc.setTextColor(255, 255, 255); }
+      else { doc.setDrawColor(200, 192, 178); doc.setLineDashPattern([1, 1], 0); doc.roundedRect(cxp + .8, cyp + .8, cell - 1.6, cell - 1.6, 2, 2, 'S'); doc.setLineDashPattern([], 0); doc.setTextColor(180, 172, 160); }
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5); doc.text(ch, cxp + cell / 2, cyp + cell / 2 + 2.2, {align: 'center'});
+    });
+    y += Math.ceil(arr.length / 13) * cell + 1.5;
+  };
+  grid(UPPER); grid(ALPHA); y += 4;
+  // words
+  const ensure = h => { if (y + h > 284) { doc.addPage(); y = 20; } };
+  ensure(20);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...navy); doc.text('Words spelled', M, y); y += 6;
+  for (const {L, done} of R.wordsDone) {
+    ensure(12);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10.5); doc.setTextColor(...navy); doc.text(`${L.title}:`, M, y);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(...muted);
+    const lines = doc.splitTextToSize(done.length ? done.join(', ') : 'not started yet', W - 2 * M - 46);
+    doc.text(lines, M + 46, y); y += Math.max(1, lines.length) * 4.8 + 1.5;
+  }
+  y += 3; ensure(36);
+  // next steps
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(...navy); doc.text('What to practise next', M, y); y += 6;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(...muted);
+  const tips = [];
+  const miss = [...R.missingUpper, ...R.missingLower];
+  if (miss.length) tips.push(`Letters still to meet: ${miss.slice(0, 20).join(' ')}${miss.length > 20 ? ' ...' : ''}`);
+  tips.push(`Next in the game: ${LEVELS[R.nx.n - 1].title}.`);
+  tips.push('Say each letter\'s sound together (m says "mmm"), not just its name.');
+  tips.push('Point to letters on signs, labels and books, and ask what sound they make.');
+  tips.push('Keep sessions short and happy: 10 minutes a day beats one long session.');
+  for (const t of tips) { ensure(7); const ls = doc.splitTextToSize(t, W - 2 * M - 6); doc.text('\u2022', M, y); doc.text(ls, M + 5, y); y += ls.length * 4.8 + 1.2; }
+  // footer on every page
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i); doc.setFontSize(8.5); doc.setTextColor(...muted);
+    doc.text('Made with Babotap by Kidspark  |  kidspark.cc  |  Progress is saved on this device only.', M, 290);
+    doc.text(`${i}/${pages}`, W - M, 290, {align: 'right'});
+  }
+  const slug = (R.name || 'child').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'child';
+  const fname = `babotap-progress-${slug}-${todayISO()}.pdf`;
+  const summary = `${who} has met ${R.letters.size} of 52 letters and spelled ${R.totalWords} of 100 words in Babotap (report made ${today}).`;
+  return {doc, fname, summary};
+}
+function repNote(msg) { $('#repNote').textContent = msg; }
+function saveBlob(blob, fname) {
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+async function withReport(btn, fn) {
+  if (btn.disabled) return;
+  P.child = $('#repName').value.trim().slice(0, 40); save();
+  const label = btn.textContent; btn.disabled = true; btn.textContent = 'Making PDF…';
+  try { await fn(await buildReport()); }
+  catch (e) { repNote('Sorry, the report could not be made. Check your internet connection and try again.'); }
+  finally { btn.disabled = false; btn.textContent = label; }
+}
+$('#repSave').addEventListener('click', () => withReport($('#repSave'), ({doc, fname}) => {
+  saveBlob(doc.output('blob'), fname); repNote('Saved. Look for the PDF in your downloads.');
+}));
+$('#repSend').addEventListener('click', () => withReport($('#repSend'), async ({doc, fname, summary}) => {
+  const email = $('#repEmail').value.trim();
+  try { localStorage.setItem('babotap.reportEmail', email); } catch (e) {}
+  const file = new File([doc.output('blob')], fname, {type: 'application/pdf'});
+  // Phones: the share sheet attaches the PDF straight into Gmail, Mail, WhatsApp and so on.
+  if (navigator.canShare && navigator.canShare({files: [file]})) {
+    try { await navigator.share({files: [file], title: 'Babotap progress report', text: summary}); repNote('Shared. Pick your email app to send it to yourself.'); return; }
+    catch (e) { if (e && e.name === 'AbortError') { repNote('Sharing was cancelled.'); return; } }
+  }
+  // Computers: save the PDF, then open a ready-to-send email so it can be attached.
+  saveBlob(file, fname);
+  const body = `${summary}\n\nThe full PDF report (${fname}) has just been saved to your downloads. Attach it to this email to keep a copy.\n\nBabotap by Kidspark - kidspark.cc`;
+  location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent('Babotap progress report')}&body=${encodeURIComponent(body)}`;
+  repNote('The PDF is saved in your downloads. Attach it to the email that just opened.');
+}));
 $('#swSound').addEventListener('click', () => { toggleSound(); renderAdult(); });
 $('#swStill').addEventListener('click', () => { if (reduceMotion) return; P.settings.still = !P.settings.still; save(); renderAdult(); });
 $('#swAssist').addEventListener('click', () => { P.settings.assist = !P.settings.assist; save(); renderAdult(); $('#trAssist').hidden = !P.settings.assist; });
