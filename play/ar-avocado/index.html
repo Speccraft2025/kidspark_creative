@@ -1,73 +1,107 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#30304d" />
-    <title>A is for Avocado in AR · Kidspark</title>
-    <link rel="icon" href="../../images/favicon.svg" type="image/svg+xml" />
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar.min.js"></script>
-    <link rel="stylesheet" href="ar.css" />
-  </head>
-  <body>
-    <main class="ar-shell">
-      <header><a href="../../shop.html">← Kidspark</a><span>kid-spark <i>×</i> ZEL XR</span></header>
-      <div class="ar-instructions" id="scan-instructions"><b>Find the Zel XR stamp</b><span>Point your camera at the printed avocado page. Keep the black-and-white square visible and hold still for a moment.</span><a href="a-is-for-avocado-ar-ready.pdf" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-weight:700;text-decoration:underline;">No page yet? Print it here (100% size)</a></div>
-      <div class="target-found hidden" id="target-found">✦ Your avocado is here!</div>
-      <div class="ar-controls hidden" id="ar-controls"><span>Drag to turn · pinch to zoom</span><button type="button" id="reset-avocado" aria-label="Reset avocado view">↺</button></div>
-      <div class="camera-error hidden" id="camera-error"><b>Camera unavailable</b><span>Open this in Safari or Chrome on your phone, then allow camera access.</span><a href="../../shop.html">Back to Kidspark</a></div>
-      <a-scene embedded vr-mode-ui="enabled: false" renderer="alpha: true; antialias: true; colorManagement: true; logarithmicDepthBuffer: true" arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;">
-        <a-assets><a-asset-item id="avocado-asset" src="Avocado-3D.glb"></a-asset-item></a-assets>
-        <!-- The stamp is placed close to the page's centre line. The rig offsets the
-             model to the physical centre of the A4 printable, not the stamp itself. -->
-        <a-marker preset="hiro" id="avocado-target" emitevents="true" smooth="true" smooth-count="10" smooth-tolerance=".01" smooth-threshold="5">
-          <a-entity id="avocado-rig" position="-2.13 -0.20 0">
-            <a-entity id="avocado-model" gltf-model="#avocado-asset" position="0 0 1.38" rotation="90 0 0" scale="1.15 1.15 3.45"></a-entity>
-          </a-entity>
-        </a-marker>
-        <a-entity camera></a-entity>
-      </a-scene>
-    </main>
-    <script>
-      const target = document.querySelector('#avocado-target');
-      const model = document.querySelector('#avocado-model');
-      const controls = document.querySelector('#ar-controls');
-      let found = false, rotation = 0, scale = 1.15, gestureStart = null, pinchStart = null;
-      const applyModelView = () => {
-        model.setAttribute('rotation', `90 0 ${rotation}`);
-        model.setAttribute('scale', `${scale} ${scale} ${scale * 3}`);
-      };
-      target.addEventListener('markerFound', () => {
-        found = true;
-        document.querySelector('#scan-instructions').classList.add('hidden');
-        document.querySelector('#target-found').classList.remove('hidden');
-        controls.classList.remove('hidden');
-      });
-      target.addEventListener('markerLost', () => { if (!found) return; document.querySelector('#target-found').classList.add('hidden'); });
-      const canvas = document.querySelector('a-scene');
-      canvas.addEventListener('touchstart', event => {
-        if (event.touches.length === 1) gestureStart = event.touches[0].clientX;
-        if (event.touches.length === 2) pinchStart = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY);
-      }, { passive: true });
-      canvas.addEventListener('touchmove', event => {
-        if (event.touches.length === 1 && gestureStart !== null) { rotation += (event.touches[0].clientX - gestureStart) * .45; gestureStart = event.touches[0].clientX; applyModelView(); }
-        if (event.touches.length === 2 && pinchStart) { const distance = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY); scale = Math.max(.55, Math.min(1.7, scale * distance / pinchStart)); pinchStart = distance; applyModelView(); }
-      }, { passive: true });
-      canvas.addEventListener('touchend', () => { gestureStart = null; pinchStart = null; }, { passive: true });
-      document.querySelector('#reset-avocado').addEventListener('click', () => { rotation = 0; scale = 1.15; applyModelView(); });
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#07090c" />
+  <title>A is for Avocado in AR · Kidspark × Zel XR</title>
+  <link rel="icon" href="../../images/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="viewer.css" />
+  <link rel="stylesheet" href="ar-viewer.css" />
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
+</head>
+<body class="zxa-body">
+<main class="zx zx-ar" id="zx" data-state="loading" data-track="search" data-object="avocado" style="--stamp-x:78.7%;--stamp-y:42%;--stamp-w:15.8%"
+  data-links='{"print":"a-is-for-avocado-ar-ready.pdf","guide":"Hold your phone about 20–40 cm above the page. Keep the small black square in view, in good light."}'>
 
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        document.querySelector('#camera-error').classList.remove('hidden');
-        document.querySelector('#scan-instructions').classList.add('hidden');
-      } else {
-        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-          .then(stream => stream.getTracks().forEach(t => t.stop()))
-          .catch(() => {
-            document.querySelector('#camera-error').classList.remove('hidden');
-            document.querySelector('#scan-instructions').classList.add('hidden');
-          });
-      }
-    </script>
-  </body>
+  <!-- Loading -->
+  <div class="zxa-loading" id="zxa-loading">
+    <div><p class="zxa-mark"><b>ZEL XR</b><span>CAMERA AR</span></p><i class="zxa-ring" aria-hidden="true"></i><p class="zxa-loading__text" id="zxa-loading-text">Starting the camera…</p></div>
+  </div>
+
+  <!-- No camera -->
+  <div class="zxa-fallback" id="zxa-fallback" hidden>
+    <div class="zxa-fallback__card">
+      <p class="zxa-mark"><b>ZEL XR</b><span>CAMERA AR</span></p>
+      <h1>Camera AR needs a phone camera</h1>
+      <p>Open this page on a phone in Safari or Chrome and allow camera access. You can still explore the object in 3D here.</p>
+      <div class="zxa-fallback__actions"><a class="zx-cta__btn" href="../../shop.html">Back to Kidspark</a><a hidden id="zxa-fallback-viewer" href="#"></a><a class="zx-cta__btn zx-cta__btn--ghost" id="zxa-fallback-print" href="activity-page.html" target="_blank" rel="noopener">Print the page</a></div>
+    </div>
+  </div>
+
+  <a class="zx-brand zxa-brand" href="../../shop.html" aria-label="Back to Kidspark"><b>ZEL XR</b><span>KIDSPARK · AR</span></a>
+  <p class="zx-status zxa-status" id="zxa-status" role="status" aria-live="polite"><i></i><span>Looking for the page</span></p>
+
+  <!-- Scan guide -->
+  <section class="zxa-guide" id="zxa-guide" aria-label="Scanning guide">
+    <div class="zxa-page" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="zxa-sweep"></span><b class="zxa-stamp"></b></div>
+    <div class="zxa-guide__card">
+      <b id="zxa-guide-title">Point at your A is for Apple page</b>
+      <span id="zxa-guide-text">Works from up to 1 m away. Keep the whole page and its black square in view, in good light.</span>
+    </div>
+  </section>
+
+  <div class="zxa-found" id="zxa-found" aria-hidden="true"><span>✦</span> <b id="zxa-found-text">A is for apple!</b></div>
+
+  <footer class="zxa-bar" id="zxa-bar">
+    <p class="zx-gesture"><span aria-hidden="true">⌁</span> <span>Drag to turn · pinch to resize · double-tap to reset</span></p>
+  </footer>
+
+  <button class="zx-reveal" id="zx-reveal" type="button" aria-controls="zx-panel" aria-expanded="false"><span aria-hidden="true">←</span><span>Controls</span></button>
+  <button class="zx-edge" id="zx-edge" type="button" tabindex="-1" aria-label="Reveal viewer controls"></button>
+
+  <aside class="zx-panel" id="zx-panel" aria-label="Camera AR controls" aria-hidden="true" inert>
+    <header class="zx-panel__top">
+      <button class="zx-dismiss" id="zx-dismiss" type="button" aria-label="Hide controls"><span aria-hidden="true">→</span></button>
+      <h1 id="zxa-title">Avocado</h1>
+      <i aria-hidden="true"></i>
+    </header>
+    <nav class="zx-tools" aria-label="AR tools">
+      <p>CONTROLS</p>
+      <button type="button" data-action="recenter"><span class="zx-ico zx-ico--target" aria-hidden="true"></span><span>Recenter</span><kbd>R</kbd></button>
+      <button type="button" data-action="rotate" aria-pressed="false"><span class="zx-ico zx-ico--orbit" aria-hidden="true"></span><span>Auto-rotate</span><kbd>Space</kbd></button>
+      <a href="../../shop.html" id="zxa-viewer-link" hidden></a><a href="../../shop.html"><span class="zx-ico zx-ico--cube" aria-hidden="true"></span><span>Kidspark shop</span></a>
+      <a href="activity-page.html" id="zxa-print-link" target="_blank" rel="noopener"><span class="zx-ico zx-ico--scan" aria-hidden="true"></span><span>Print the page</span></a>
+      <button type="button" data-action="settings" aria-expanded="false" aria-controls="zx-settings"><span class="zx-ico zx-ico--dial" aria-hidden="true"></span><span>Settings</span></button>
+      <button type="button" data-action="hide"><span class="zx-ico zx-ico--hide" aria-hidden="true"></span><span>Hide</span><kbd>C</kbd></button>
+    </nav>
+    <section class="zx-settings" id="zx-settings" hidden>
+      <label><input id="zx-motion" type="checkbox" /> Reduce motion</label>
+      <label><input id="zx-dim" type="checkbox" /> Dim interface</label>
+    </section>
+    <section class="zx-hints">
+      <p>HINTS &amp; MESSAGES</p>
+      <div><span aria-hidden="true">⌁</span><b id="zx-message" role="status" aria-live="polite">Hold the page flat and steady</b></div>
+      <small>Print the page at 100% scale and keep the black-and-white square uncoloured.</small>
+    </section>
+  </aside>
+
+</main>
+  <a-scene embedded vr-mode-ui="enabled: false" loading-screen="enabled: false" device-orientation-permission-ui="enabled: false"
+  renderer="alpha: true; antialias: true; colorManagement: true; precision: mediump"
+  arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; cameraParametersUrl: assets/ar/camera_para.dat; maxDetectionRate: 60">
+  <a-assets timeout="30000"><a-asset-item id="zxa-avocado" src="Avocado-3D.glb"></a-asset-item></a-assets>
+  <a-entity light="type: hemisphere; color: #ffffff; groundColor: #6b5a4a; intensity: 1.6"></a-entity>
+  <a-entity light="type: directional; color: #fff6ea; intensity: 2.2" position="0.6 3 2"></a-entity>
+  <a-entity light="type: directional; color: #cfe8ff; intensity: 0.7" position="-2 1.5 -1"></a-entity>
+
+  <!-- The 33 mm black-and-white square on the avocado page is the anchor (1 unit = its width;
+         page in the X/Z plane, +Z toward the bottom of the page). The avocado stands on the
+         centre of the drawn avocado: 2.23 units left of and 1.95 units below the square. -->
+  <a-marker type="pattern" url="assets/ar/patt.hiro" id="zxa-anchor" emitevents="true"
+    smooth="true" smooth-count="6" smooth-tolerance="0.01" smooth-threshold="4">
+    <a-entity id="zxa-page" position="-2.23 0 1.95">
+      <a-entity id="zxa-pose" zx-object="height: 3.0">
+        <a-entity id="zxa-model" gltf-model="#zxa-avocado"></a-entity>
+      </a-entity>
+    </a-entity>
+  </a-marker>
+  <a-entity camera></a-entity>
+</a-scene>
+<script src="ar-viewer.js"></script>
+</body>
 </html>
