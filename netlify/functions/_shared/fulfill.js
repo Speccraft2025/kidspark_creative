@@ -5,6 +5,7 @@
 // ---------------------------------------------------------------------------
 
 const { supabase, sendEmail, randomToken, siteUrl } = require('./lib');
+const { playCodeFor, orderIncludesPlayCode } = require('./playcode');
 
 const GRANT_TTL_HOURS = 24 * 365; // gallery link stays valid ~1 year
 const MAX_DOWNLOADS = 5000;       // generous: per-page downloads across revisits
@@ -53,7 +54,7 @@ async function fulfillOrder(reference) {
     .update({ status: 'paid', paid_at: new Date().toISOString() })
     .eq('id', order.id);
 
-  await sendDeliveryEmail(order.email, token).catch((e) =>
+  await sendDeliveryEmail(order.email, token, order).catch((e) =>
     console.error('Delivery email failed (order still fulfilled):', e)
   );
 
@@ -64,8 +65,21 @@ function libraryUrl(token) {
   return `${siteUrl()}/library.html?token=${encodeURIComponent(token)}`;
 }
 
-async function sendDeliveryEmail(to, token) {
+async function sendDeliveryEmail(to, token, order) {
   const url = libraryUrl(token);
+  let playBlock = '';
+  if (order && orderIncludesPlayCode(order.product_ids)) {
+    const code = playCodeFor(order.reference);
+    const playUrl = `${siteUrl()}/play/babotap/?code=${encodeURIComponent(code)}`;
+    playBlock = `
+      <div style="margin:26px 0;padding:18px 20px;border-radius:16px;background:#FFF3E0">
+        <h3 style="margin:0 0 6px;color:#1E212B">🎈 Your Babotap play code</h3>
+        <p style="margin:0 0 12px">Your bundle includes the full Babotap phonics game: all 52 letters and 100 words.</p>
+        <p style="margin:0 0 14px;font-size:24px;font-weight:700;letter-spacing:3px;color:#1E212B">${code}</p>
+        <a href="${playUrl}" style="background:#1E212B;color:#fff;font-weight:700;padding:12px 22px;border-radius:999px;text-decoration:none;display:inline-block">Play the full game →</a>
+        <p style="margin:12px 0 0;font-size:13px;color:#6B7280">On another device? Open ${siteUrl()}/play/babotap/ and enter the code.</p>
+      </div>`;
+  }
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:520px;margin:auto;color:#1E212B">
       <h2 style="color:#FF9427">Thank you for your purchase! 🎨</h2>
@@ -76,7 +90,7 @@ async function sendDeliveryEmail(to, token) {
            padding:14px 28px;border-radius:999px;text-decoration:none;display:inline-block">
           Open my downloads →
         </a>
-      </p>
+      </p>${playBlock}
       <p style="font-size:13px;color:#6B7280">Bookmark this link — it stays active
       so you can keep downloading pages one at a time. Lost it? Visit our site and
       use "Retrieve my downloads" with this email address.

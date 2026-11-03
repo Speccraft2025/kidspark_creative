@@ -417,6 +417,45 @@ p { color: var(--ink-soft); }
 .badge-free { background: var(--green-dark); color: var(--white); }
 .badge-popular { background: var(--yellow); color: var(--navy); }
 
+/* ---------- Product snapshot carousel (top of product cards) ---------- */
+.product-carousel {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  background: var(--cream-deep);
+}
+.product-carousel .pc-track {
+  display: flex; height: 100%;
+  transition: transform 0.6s cubic-bezier(.65,.05,.36,1);
+}
+.product-carousel .pc-slide {
+  flex: 0 0 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 18px 0 30px;
+}
+.product-carousel .pc-slide img {
+  height: 100%; width: auto; max-width: 80%;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(30,33,43,0.16), 0 0 0 1px rgba(30,33,43,0.06);
+}
+.product-carousel .pc-dots {
+  position: absolute; left: 0; right: 0; bottom: 10px;
+  display: flex; justify-content: center; gap: 7px;
+}
+.product-carousel .pc-dot {
+  width: 8px; height: 8px; border-radius: 50%; padding: 0;
+  background: rgba(30,33,43,0.22);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.product-carousel .pc-dot.is-active { background: var(--orange); transform: scale(1.25); }
+.product-carousel .badge { z-index: 2; }
+#packsGrid .product-thumb { height: 250px; }
+@media (prefers-reduced-motion: reduce) {
+  .product-carousel .pc-track { transition: none; }
+}
+
 /* ---------- Testimonial / Quote ---------- */
 .quote-card {
   background: var(--white);

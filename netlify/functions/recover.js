@@ -66,7 +66,7 @@ exports.handler = async (event) => {
       if (insErr) throw insErr;
     }
 
-    await sendDeliveryEmail(order.email, token).catch((e) =>
+    await sendDeliveryEmail(order.email, token, order).catch((e) =>
       console.error('Recover email failed (link still returned):', e)
     );
 

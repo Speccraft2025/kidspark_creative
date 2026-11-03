@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#30304d" />
+    <title>A is for Avocado in AR · Kidspark</title>
+    <link rel="icon" href="../../images/favicon.svg" type="image/svg+xml" />
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.8/aframe/build/aframe-ar.min.js"></script>
+    <link rel="stylesheet" href="ar.css" />
+  </head>
+  <body>
+    <main class="ar-shell">
+      <header><a href="../../shop.html">← Kidspark</a><span>kid-spark <i>×</i> ZEL XR</span></header>
+      <div class="ar-instructions" id="scan-instructions"><b>Find the Zel XR stamp</b><span>Point your camera at the printed avocado page. Keep the black-and-white square visible and hold still for a moment.</span><a href="a-is-for-avocado-ar-ready.pdf" target="_blank" rel="noopener" style="display:inline-block;margin-top:8px;font-weight:700;text-decoration:underline;">No page yet? Print it here (100% size)</a></div>
+      <div class="target-found hidden" id="target-found">✦ Your avocado is here!</div>
+      <div class="ar-controls hidden" id="ar-controls"><span>Drag to turn · pinch to zoom</span><button type="button" id="reset-avocado" aria-label="Reset avocado view">↺</button></div>
+      <div class="camera-error hidden" id="camera-error"><b>Camera unavailable</b><span>Open this in Safari or Chrome on your phone, then allow camera access.</span><a href="../../shop.html">Back to Kidspark</a></div>
+      <a-scene embedded vr-mode-ui="enabled: false" renderer="alpha: true; antialias: true; colorManagement: true; logarithmicDepthBuffer: true" arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix;">
+        <a-assets><a-asset-item id="avocado-asset" src="Avocado-3D.glb"></a-asset-item></a-assets>
+        <!-- The stamp is placed close to the page's centre line. The rig offsets the
+             model to the physical centre of the A4 printable, not the stamp itself. -->
+        <a-marker preset="hiro" id="avocado-target" emitevents="true" smooth="true" smooth-count="10" smooth-tolerance=".01" smooth-threshold="5">
+          <a-entity id="avocado-rig" position="-2.13 -0.20 0">
+            <a-entity id="avocado-model" gltf-model="#avocado-asset" position="0 0 1.38" rotation="90 0 0" scale="1.15 1.15 3.45"></a-entity>
+          </a-entity>
+        </a-marker>
+        <a-entity camera></a-entity>
+      </a-scene>
+    </main>
+    <script>
+      const target = document.querySelector('#avocado-target');
+      const model = document.querySelector('#avocado-model');
+      const controls = document.querySelector('#ar-controls');
+      let found = false, rotation = 0, scale = 1.15, gestureStart = null, pinchStart = null;
+      const applyModelView = () => {
+        model.setAttribute('rotation', `90 0 ${rotation}`);
+        model.setAttribute('scale', `${scale} ${scale} ${scale * 3}`);
+      };
+      target.addEventListener('markerFound', () => {
+        found = true;
+        document.querySelector('#scan-instructions').classList.add('hidden');
+        document.querySelector('#target-found').classList.remove('hidden');
+        controls.classList.remove('hidden');
+      });
+      target.addEventListener('markerLost', () => { if (!found) return; document.querySelector('#target-found').classList.add('hidden'); });
+      const canvas = document.querySelector('a-scene');
+      canvas.addEventListener('touchstart', event => {
+        if (event.touches.length === 1) gestureStart = event.touches[0].clientX;
+        if (event.touches.length === 2) pinchStart = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY);
+      }, { passive: true });
+      canvas.addEventListener('touchmove', event => {
+        if (event.touches.length === 1 && gestureStart !== null) { rotation += (event.touches[0].clientX - gestureStart) * .45; gestureStart = event.touches[0].clientX; applyModelView(); }
+        if (event.touches.length === 2 && pinchStart) { const distance = Math.hypot(event.touches[0].clientX - event.touches[1].clientX, event.touches[0].clientY - event.touches[1].clientY); scale = Math.max(.55, Math.min(1.7, scale * distance / pinchStart)); pinchStart = distance; applyModelView(); }
+      }, { passive: true });
+      canvas.addEventListener('touchend', () => { gestureStart = null; pinchStart = null; }, { passive: true });
+      document.querySelector('#reset-avocado').addEventListener('click', () => { rotation = 0; scale = 1.15; applyModelView(); });
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        document.querySelector('#camera-error').classList.remove('hidden');
+        document.querySelector('#scan-instructions').classList.add('hidden');
+      } else {
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+          .then(stream => stream.getTracks().forEach(t => t.stop()))
+          .catch(() => {
+            document.querySelector('#camera-error').classList.remove('hidden');
+            document.querySelector('#scan-instructions').classList.add('hidden');
+          });
+      }
+    </script>
+  </body>
+</html>

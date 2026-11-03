@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
           form.reset();
         })
         .catch(function () {
-          alert("Sorry, that didn't go through. Please try again in a moment, or email us directly at jayzelisaac@gmail.com.");
+          alert("Sorry, that didn't go through. Please try again in a moment, or email us directly at kidsparkinternational@gmail.com.");
         });
     });
   }

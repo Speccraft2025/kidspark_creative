@@ -2,6 +2,7 @@
 // Lists the pages a buyer can download, grouped by pack, for their gallery.
 const { supabase, json, SUPABASE_BUCKET } = require('./_shared/lib');
 const { deliveryForOrder } = require('./_shared/products');
+const { playCodeFor, orderIncludesPlayCode } = require('./_shared/playcode');
 
 // Resolve a gallery token to a valid, unexpired order. Returns { grant, order }.
 async function resolveToken(token) {
@@ -58,9 +59,14 @@ exports.handler = async (event) => {
       });
     }
 
+    const babotap = orderIncludesPlayCode(order.product_ids)
+      ? { playCode: playCodeFor(order.reference), playUrl: '/play/babotap/', demoVideoUrl: '/play/babotap/demo/babotap-demo.mp4' }
+      : null;
+
     return json(200, {
       sections: out,
       bundleZipUrl: bundleZip ? dl(token, bundleZip.zipPath) : null,
+      babotap,
     });
   } catch (e) {
     console.error('library failed:', e);

@@ -33,7 +33,7 @@ const PRODUCTS = [
   {
     id: 'complete-bundle',
     name: 'KidSpark Complete Bundle',
-    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes, Join-the-Dots & Grade 1 Handwriting. Best value.',
+    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes, Join-the-Dots & Grade 1 Handwriting — plus the full Babotap phonics game. Best value.',
     type: 'bundle',
     priceMinor: 60000, // KES 600  <-- PLACEHOLDER
     delivery: {
