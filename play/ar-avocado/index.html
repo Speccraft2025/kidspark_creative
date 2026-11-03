@@ -15,8 +15,7 @@
   <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.4.5/aframe/build/aframe-ar.js"></script>
 </head>
 <body class="zxa-body">
-<main class="zx zx-ar" id="zx" data-state="loading" data-track="search" data-object="avocado" style="--stamp-x:78.7%;--stamp-y:42%;--stamp-w:15.8%"
-  data-links='{"print":"a-is-for-avocado-ar-ready.pdf","guide":"Hold your phone about 20–40 cm above the page. Keep the small black square in view, in good light."}'>
+<main class="zx zx-ar" id="zx" data-state="loading" data-track="search" data-object="avocado" data-links='{"viewer":"../../shop.html"}'>
 
   <!-- Loading -->
   <div class="zxa-loading" id="zxa-loading">
@@ -29,7 +28,7 @@
       <p class="zxa-mark"><b>ZEL XR</b><span>CAMERA AR</span></p>
       <h1>Camera AR needs a phone camera</h1>
       <p>Open this page on a phone in Safari or Chrome and allow camera access. You can still explore the object in 3D here.</p>
-      <div class="zxa-fallback__actions"><a class="zx-cta__btn" href="../../shop.html">Back to Kidspark</a><a hidden id="zxa-fallback-viewer" href="#"></a><a class="zx-cta__btn zx-cta__btn--ghost" id="zxa-fallback-print" href="activity-page.html" target="_blank" rel="noopener">Print the page</a></div>
+      <div class="zxa-fallback__actions"><a class="zx-cta__btn" href="../../shop.html">Back to Kidspark</a><a hidden id="zxa-fallback-viewer" href="#"></a><a class="zx-cta__btn zx-cta__btn--ghost" id="zxa-fallback-print" href="assets/printables/a-is-for-apple-ar.pdf" target="_blank" rel="noopener">Print the page</a></div>
     </div>
   </div>
 
@@ -38,10 +37,10 @@
 
   <!-- Scan guide -->
   <section class="zxa-guide" id="zxa-guide" aria-label="Scanning guide">
-    <div class="zxa-page" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="zxa-sweep"></span><b class="zxa-stamp"></b></div>
+    <div class="zxa-page" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="zxa-art"></span><span class="zxa-sweep"></span><b class="zxa-stamp"></b></div>
     <div class="zxa-guide__card">
       <b id="zxa-guide-title">Point at your A is for Apple page</b>
-      <span id="zxa-guide-text">Works from up to 1 m away. Keep the whole page and its black square in view, in good light.</span>
+      <span id="zxa-guide-text">Works from up to 1 m away. Keep the K✦ scan square in view, in good light.</span>
     </div>
   </section>
 
@@ -64,8 +63,8 @@
       <p>CONTROLS</p>
       <button type="button" data-action="recenter"><span class="zx-ico zx-ico--target" aria-hidden="true"></span><span>Recenter</span><kbd>R</kbd></button>
       <button type="button" data-action="rotate" aria-pressed="false"><span class="zx-ico zx-ico--orbit" aria-hidden="true"></span><span>Auto-rotate</span><kbd>Space</kbd></button>
-      <a href="../../shop.html" id="zxa-viewer-link" hidden></a><a href="../../shop.html"><span class="zx-ico zx-ico--cube" aria-hidden="true"></span><span>Kidspark shop</span></a>
-      <a href="activity-page.html" id="zxa-print-link" target="_blank" rel="noopener"><span class="zx-ico zx-ico--scan" aria-hidden="true"></span><span>Print the page</span></a>
+      <a href="../../shop.html" id="zxa-viewer-link"><span class="zx-ico zx-ico--cube" aria-hidden="true"></span><span>Kidspark shop</span></a>
+      <a href="assets/printables/a-is-for-apple-ar.pdf" id="zxa-print-link" target="_blank" rel="noopener"><span class="zx-ico zx-ico--scan" aria-hidden="true"></span><span>Print the page</span></a>
       <button type="button" data-action="settings" aria-expanded="false" aria-controls="zx-settings"><span class="zx-ico zx-ico--dial" aria-hidden="true"></span><span>Settings</span></button>
       <button type="button" data-action="hide"><span class="zx-ico zx-ico--hide" aria-hidden="true"></span><span>Hide</span><kbd>C</kbd></button>
     </nav>
@@ -76,27 +75,26 @@
     <section class="zx-hints">
       <p>HINTS &amp; MESSAGES</p>
       <div><span aria-hidden="true">⌁</span><b id="zx-message" role="status" aria-live="polite">Hold the page flat and steady</b></div>
-      <small>Print the page at 100% scale and keep the black-and-white square uncoloured.</small>
+      <small>Reads the K✦ scan square from up to 1 m. Print at 100% scale.</small>
     </section>
   </aside>
 
 </main>
   <a-scene embedded vr-mode-ui="enabled: false" loading-screen="enabled: false" device-orientation-permission-ui="enabled: false"
-  renderer="alpha: true; antialias: true; colorManagement: true; precision: mediump"
+  renderer="alpha: true; antialias: true; colorManagement: true; precision: mediump; toneMapping: ACESFilmic; exposure: 1.05"
   arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; cameraParametersUrl: assets/ar/camera_para.dat; maxDetectionRate: 60">
-  <a-assets timeout="30000"><a-asset-item id="zxa-avocado" src="Avocado-3D.glb"></a-asset-item></a-assets>
-  <a-entity light="type: hemisphere; color: #ffffff; groundColor: #6b5a4a; intensity: 1.6"></a-entity>
-  <a-entity light="type: directional; color: #fff6ea; intensity: 2.2" position="0.6 3 2"></a-entity>
-  <a-entity light="type: directional; color: #cfe8ff; intensity: 0.7" position="-2 1.5 -1"></a-entity>
+    <a-entity light="type: hemisphere; color: #ffffff; groundColor: #6b5a4a; intensity: 0.9"></a-entity>
+  <a-entity light="type: directional; color: #fff6ea; intensity: 1.5" position="0.6 3 2"></a-entity>
+  <a-entity light="type: directional; color: #cfe8ff; intensity: 0.5" position="-2 1.5 -1"></a-entity>
 
-  <!-- The 33 mm black-and-white square on the avocado page is the anchor (1 unit = its width;
-         page in the X/Z plane, +Z toward the bottom of the page). The avocado stands on the
-         centre of the drawn avocado: 2.23 units left of and 1.95 units below the square. -->
-  <a-marker type="pattern" url="assets/ar/patt.hiro" id="zxa-anchor" emitevents="true"
+  <!-- Anchor: the 66 mm K✦ scan square on every Kidspark AR page (assets/printables).
+     1 unit = the square's width; the page lies in the X/Z plane with +Z toward its bottom edge.
+     The picture frame's centre is 0.848 units left of and 1.682 units above the square's centre. -->
+  <a-marker type="pattern" url="assets/ar/kidspark.patt" id="zxa-anchor" emitevents="true"
     smooth="true" smooth-count="6" smooth-tolerance="0.01" smooth-threshold="4">
-    <a-entity id="zxa-page" position="-2.23 0 1.95">
-      <a-entity id="zxa-pose" zx-object="height: 3.0">
-        <a-entity id="zxa-model" gltf-model="#zxa-avocado"></a-entity>
+    <a-entity id="zxa-page" position="-0.848 0 -1.682">
+      <a-entity id="zxa-pose" zx-object>
+        <a-entity id="zxa-model"></a-entity>
       </a-entity>
     </a-entity>
   </a-marker>

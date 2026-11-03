@@ -3,8 +3,8 @@
    standing on the centre of the printed page at a fixed height. */
 (() => {
   const OBJECTS = {
-    apple: { name: 'Red Apple', found: 'A is for apple!', page: 'A is for Apple', print: 'activity-page.html', viewer: 'viewer.html?object=apple' },
-    avocado: { name: 'Avocado', found: 'Your avocado is here!', page: 'A is for Avocado', print: 'a-is-for-avocado-ar-ready.pdf', viewer: 'viewer.html?object=avocado' }
+    apple: { name: 'Red Apple', found: 'A is for apple!', page: 'A is for Apple', src: 'assets/Red-Apple-3D.glb', height: 1.55, print: 'assets/printables/a-is-for-apple-ar.pdf', viewer: 'viewer.html?object=apple' },
+    avocado: { name: 'Avocado', found: 'Your avocado is here!', page: 'A is for Avocado', src: 'assets/Avocado-3D.glb', height: 1.75, print: 'assets/printables/a-is-for-avocado-ar.pdf', viewer: 'viewer.html?object=avocado' }
   };
   const params = new URLSearchParams(location.search);
   const want = document.querySelector('#zx').dataset.object || params.get('object');
@@ -29,11 +29,15 @@
   AFRAME.registerComponent('zx-object', {
     schema: { height: { type: 'number', default: 1.75 } },
     init() {
-      this.model = this.el.querySelector('[gltf-model]');
+      this.model = this.el.querySelector('#zxa-model');
+      this.data.height = OBJ.height || this.data.height;
+      this.model.setAttribute('gltf-model', `url(${OBJ.src})`);
       this.yaw = 0; this.user = 1; this.pop = 0; this.popStart = -1; this.spin = false;
       this.el.object3D.scale.setScalar(0.0001);
       this.model.addEventListener('model-loaded', () => this.fit());
       this.addShadow();
+      this.addLook();
+      this.addBurst();
       this.bindGestures();
     },
     // Scale the model to a fixed height, stand it on the page and centre it.
@@ -60,7 +64,45 @@
       this.shadow.rotation.x = -Math.PI / 2; this.shadow.position.y = 0.004; this.shadow.renderOrder = -1;
       this.el.parentNode.object3D.add(this.shadow);
     },
+    // Soft studio reflections so glossy skins (apple clearcoat, avocado seed) read as real.
+    addLook() {
+      const scene = this.el.sceneEl;
+      const go = () => {
+        const r = scene.renderer; if (!r || scene.object3D.environment) return;
+        const c = document.createElement('canvas'); c.width = 256; c.height = 128;
+        const g = c.getContext('2d'), grd = g.createLinearGradient(0, 0, 0, 128);
+        grd.addColorStop(0, '#ffffff'); grd.addColorStop(0.45, '#f3efe8'); grd.addColorStop(0.55, '#8d8a86'); grd.addColorStop(1, '#3a3836');
+        g.fillStyle = grd; g.fillRect(0, 0, 256, 128);
+        g.fillStyle = 'rgba(255,255,255,0.95)'; g.fillRect(40, 18, 60, 22); g.fillRect(150, 26, 50, 16);
+        const tex = new THREE.CanvasTexture(c); tex.mapping = THREE.EquirectangularReflectionMapping;
+        if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
+        const pm = new THREE.PMREMGenerator(r);
+        scene.object3D.environment = pm.fromEquirectangular(tex).texture;
+        pm.dispose();
+      };
+      if (scene.renderer) go(); else scene.addEventListener('renderstart', go, { once: true });
+    },
+    // A landing ring and a few rising sparkles when the object first appears.
+    addBurst() {
+      const ring = new THREE.Mesh(new THREE.RingGeometry(0.86, 1, 64), new THREE.MeshBasicMaterial({ color: 0x51def6, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+      ring.rotation.x = -Math.PI / 2; ring.position.y = 0.01;
+      const c = document.createElement('canvas'); c.width = c.height = 64; const g = c.getContext('2d');
+      g.translate(32, 32); g.fillStyle = '#fff'; g.beginPath();
+      for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? 7 : 30; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+      g.closePath(); g.fill();
+      const starTex = new THREE.CanvasTexture(c), cols = [0xffcb00, 0xff9427, 0x51def6, 0xffffff, 0x8bd450];
+      this.sparks = Array.from({ length: 12 }, (_, i) => {
+        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: starTex, color: cols[i % cols.length], transparent: true, opacity: 0, depthWrite: false }));
+        const a = (i / 12) * Math.PI * 2 + Math.random() * .4, d = .55 + Math.random() * .55;
+        sp.userData = { x: Math.cos(a) * d, z: Math.sin(a) * d, rise: .9 + Math.random() * 1.1, s: .16 + Math.random() * .14, delay: Math.random() * .25 };
+        sp.scale.setScalar(.001); return sp;
+      });
+      const parent = this.el.parentNode.object3D;
+      this.ring = ring; parent.add(ring); this.sparks.forEach(sp => parent.add(sp));
+      this.burstStart = -1;
+    },
     appear() {
+      if (!reduceMotion()) this.burstStart = performance.now();
       if (reduceMotion()) { this.pop = 1; this.popStart = -1; return; }
       this.popStart = performance.now();
     },
@@ -110,6 +152,17 @@
       o.scale.setScalar(Math.max(0.0001, this.pop * this.curUser));
       o.position.y = (1 - Math.min(1, this.pop)) * 0.35;
       if (this.shadow) this.shadow.material.opacity = Math.min(1, this.pop);
+      if (this.burstStart >= 0 && this.ring) {
+        const k = (performance.now() - this.burstStart) / 1000, w = this.shadow ? this.shadow.scale.x / 1.25 : 1.5;
+        const rk = Math.min(1, k / .7); this.ring.scale.setScalar(w * (.35 + rk * .9)); this.ring.material.opacity = (1 - rk) * .85;
+        this.sparks.forEach(sp => {
+          const u = sp.userData, q = Math.max(0, Math.min(1, (k - u.delay) / .95));
+          sp.position.set(u.x * w * (0.6 + q * .5), q * u.rise * w * .9, u.z * w * (0.6 + q * .5));
+          sp.scale.setScalar(u.s * w * Math.sin(Math.PI * Math.min(1, q * 1.15)) + .0001);
+          sp.material.opacity = q > 0 ? Math.sin(Math.PI * q) : 0; sp.material.rotation = q * 2.5;
+        });
+        if (k > 1.4) { this.burstStart = -1; this.ring.material.opacity = 0; this.sparks.forEach(sp => { sp.material.opacity = 0; }); }
+      }
     }
   });
 
