@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Babotap</title>
+<script>window.BABOTAP_TRIAL = {verify: '/api/play-code'};  /* kidspark.cc: free taster until a play code is entered */</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -272,6 +273,22 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .confirm p{margin:0 0 10px;font:600 1rem/1.4 var(--f-body);color:var(--navy)}
 .btn-danger{background:var(--navy);color:#fff}
 .small{font:400 .9rem/1.4 var(--f-body);color:var(--muted)}
+/* free taster + play code */
+.trial-note{display:inline-flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin:14px auto 0;padding:10px 16px;border-radius:999px;background:var(--white);box-shadow:var(--shadow-sm);font:600 .98rem/1.3 var(--f-body);color:var(--navy)}
+.trial-note button{font:700 .98rem var(--f-body);color:var(--orange-press);text-decoration:underline;text-underline-offset:3px}
+.act.is-locked{opacity:.78}
+.act.is-locked .act-ill{filter:grayscale(.6)}
+.lock-tag{position:absolute;top:-12px;right:18px;display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--navy);color:#fff;font:700 .85rem var(--f-body)}
+.free-tag{position:absolute;top:-12px;right:18px;padding:5px 12px;border-radius:999px;background:var(--green);color:#fff;font:700 .85rem var(--f-body)}
+.act.is-current .free-tag{right:auto;left:18px}
+.lock-sheet .lk-art{font-size:3.2rem;line-height:1;margin:4px 0 6px}
+.lock-sheet form{display:grid;gap:8px;margin:14px 0 10px;text-align:left}
+.lock-sheet label{font:700 .95rem var(--f-body);color:var(--navy)}
+.lock-sheet input{width:100%;min-height:54px;padding:0 16px;border-radius:16px;border:2px solid rgba(30,33,43,.14);background:#fff;font:700 1.25rem/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;text-align:center;color:var(--navy)}
+.lock-sheet input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 4px rgba(255,148,39,.16)}
+.lk-err{min-height:1.3em;margin:0;font:600 .92rem/1.3 var(--f-body);color:#C2410C;text-align:center}
+.lock-sheet .btn{width:100%}
+.lock-sheet .lk-buy{margin-top:4px}
 .report-box{margin-top:8px;padding:16px;border-radius:20px;background:var(--cream-2);display:grid;gap:10px}
 .report-box label{font:700 .95rem var(--f-body);color:var(--navy)}
 .report-box input{width:100%;min-height:48px;padding:0 14px;border-radius:14px;border:1.5px solid rgba(30,33,43,.14);background:#fff;font:400 1rem var(--f-body);color:var(--ink)}
@@ -631,6 +648,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
         <p class="sub">Pop, listen and learn your letters.</p>
         <button class="btn btn-primary play" id="playBtn"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span id="playLabel">Let’s play</span></button>
         <p class="resume" id="resumeLine"></p>
+        <p class="trial-note" id="trialNote" hidden><span>Free taster: 3 letters and 3 words.</span><button type="button" id="trialCodeBtn">Have a play code?</button></p>
       </section>
       <h2 class="sr">Activities</h2>
       <div class="cards" id="cards"></div>
@@ -748,6 +766,23 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
         <button class="btn btn-primary" id="pResume"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg>Keep playing</button>
       </div>
       <button class="btn-text" id="pAdult" style="margin-top:8px">For grown-ups</button>
+    </div>
+  </div>
+
+  <div class="dlg" id="lockDlg" hidden>
+    <div class="sheet lock-sheet" role="dialog" aria-modal="true" aria-labelledby="lkTitle">
+      <button class="x" id="lkClose" aria-label="Close"><svg class="ico"><use href="#i-close"/></svg></button>
+      <div class="lk-art" aria-hidden="true">🎈</div>
+      <h2 id="lkTitle">Unlock all of Babotap</h2>
+      <p class="lc-tip" id="lkMsg"></p>
+      <form id="lkForm" novalidate>
+        <label for="lkCode">Play code</label>
+        <input id="lkCode" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="24" placeholder="e.g. K7QXM-R2D9TA">
+        <p class="lk-err" id="lkErr" role="alert" aria-live="polite"></p>
+        <button class="btn btn-primary" type="submit" id="lkGo">Unlock</button>
+      </form>
+      <a class="btn btn-soft lk-buy" id="lkBuy" href="/shop.html#shop-grid" target="_top">Get the Complete Bundle</a>
+      <p class="small" style="margin:12px 0 0">Bought the KidSpark Complete Bundle? Your play code is in your purchase email and on your download page.</p>
     </div>
   </div>
 
@@ -1025,7 +1060,7 @@ document.addEventListener('keydown', unlock, {capture: true});
    dialogs: one stack, background inert, focus returned on close
    ===================================================================== */
 const home = $('#home'), game = $('#game'), field = $('#field'), dock = $('#dock');
-const DLGS = ['#cardDlg', '#collectDlg', '#traceDlg', '#winDlg', '#pauseDlg', '#adultDlg'].map(s => $(s));
+const DLGS = ['#cardDlg', '#collectDlg', '#traceDlg', '#winDlg', '#pauseDlg', '#adultDlg', '#lockDlg'].map(s => $(s));
 const stack = [];
 const focusables = el => [...el.querySelectorAll('button:not([disabled]),[href],input,select,textarea,[tabindex]:not([tabindex="-1"]),canvas')].filter(x => !x.hidden && x.offsetParent !== null);
 function syncInert() {
@@ -1064,10 +1099,18 @@ const S = {
 /* =====================================================================
    home
    ===================================================================== */
+/* free taster: on the Kidspark site the page sets window.BABOTAP_TRIAL, which limits play to the
+   first TRIAL_LEVELS activities and TRIAL_ITEMS items in each until a play code is entered. */
+const TRIAL = window.BABOTAP_TRIAL || null, TRIAL_LEVELS = 2, TRIAL_ITEMS = 3, UNLOCK_KEY = 'babotap.unlock';
+let paidUnlocked = !TRIAL;
+try { if (TRIAL && localStorage.getItem(UNLOCK_KEY)) paidUnlocked = true; } catch (e) {}
+const inTrial = () => !paidUnlocked;
+const lockedLevel = n => inTrial() && n > TRIAL_LEVELS;
 const lettersFound = () => P.letters.length;
 const levelDone = n => n === 1 ? lettersFound() : P.words[n];
 const levelTotal = n => n === 1 ? 52 : 20;
 const unfinished = n => levelDone(n) < levelTotal(n);
+const trialSpent = n => inTrial() && n <= TRIAL_LEVELS && levelDone(n) >= TRIAL_ITEMS;
 function progressLine(n) {
   if (n === 1) { const k = lettersFound(); return `Level 1 · ${k} letter${k === 1 ? '' : 's'} found`; }
   return `Level ${n} · ${P.words[n]} of 20 words`;
@@ -1075,6 +1118,7 @@ function progressLine(n) {
 function nextActivity() {
   const started = lettersFound() > 0 || [2,3,4,5,6].some(n => P.words[n] > 0) || P.last != null;
   if (!started) return {n: 1, label: 'Let’s play', line: 'Start with Meet the letters'};
+  if (inTrial()) { const f = [1, 2].find(n => !trialSpent(n)); return f ? {n: f, label: 'Keep playing', line: progressLine(f)} : {n: 3, label: 'Unlock the full game', line: 'You finished the free taster!'}; }
   if (P.last && unfinished(P.last)) return {n: P.last, label: 'Keep playing', line: progressLine(P.last)};
   const f = LEVELS.map(L => L.n).find(unfinished);
   if (f) return {n: f, label: 'Keep playing', line: progressLine(f)};
@@ -1089,10 +1133,12 @@ function renderHome() {
   $('#playLabel').textContent = nx.label;
   $('#resumeLine').textContent = nx.line;
   $('#playBtn').dataset.n = nx.n;
+  $('#trialNote').hidden = !inTrial();
   $('#cards').innerHTML = LEVELS.map(L => {
     const done = levelDone(L.n), total = levelTotal(L.n), cur = L.n === nx.n, complete = done >= total;
-    const unit = L.n === 1 ? 'letters found' : 'words spelled';
-    return `<button class="act${cur ? ' is-current' : ''}" data-n="${L.n}" ${cur ? 'aria-current="true"' : ''} aria-label="Level ${L.n}: ${esc(L.title)}. ${done} of ${total} ${unit}.${cur ? ' Up next.' : ''}">
+    const unit = L.n === 1 ? 'letters found' : 'words spelled', locked = lockedLevel(L.n), free = inTrial() && !locked;
+    return `<button class="act${cur ? ' is-current' : ''}${locked ? ' is-locked' : ''}" data-n="${L.n}" ${cur ? 'aria-current="true"' : ''} aria-label="Level ${L.n}: ${esc(L.title)}. ${done} of ${total} ${unit}.${cur ? ' Up next.' : ''}${locked ? ' Locked: needs a play code.' : ''}">
+      ${locked ? '<span class="lock-tag" aria-hidden="true">🔒 Full game</span>' : ''}${free ? `<span class="free-tag" aria-hidden="true">Free taster: ${TRIAL_ITEMS}</span>` : ''}
       ${cur ? '<span class="act-tag" aria-hidden="true"><svg class="ico"><use href="#i-play"/></svg>Up next</span>' : ''}
       <span class="act-badge b-${L.badge}" aria-hidden="true">${L.n}</span>
       <span class="act-title" aria-hidden="true">${esc(L.title)}</span>
@@ -1145,6 +1191,7 @@ function showScreen(which) {
   window.scrollTo(0, 0);
 }
 function startLevel(n) {
+  if (lockedLevel(n) || trialSpent(n)) { openUnlock(lockedLevel(n) ? 'locked' : 'spent'); return; }
   unlock(); hush(); S.session++; closeAllDialogs();
   S.level = LEVELS[n - 1]; S.paused = false; S.busy = false;
   P.last = n; markPlayed(); save();
@@ -1420,6 +1467,7 @@ async function popLetter(b) {
   await showLetterCard(b.ch, {returnFocus: $('#pauseBtn')});
   if (sess !== S.session) return;
   S.busy = false; fillLetters();
+  if (inTrial() && lettersFound() >= TRIAL_ITEMS) { S.busy = true; openUnlock('spent'); return; }
   if (isNew && lettersFound() >= 52 && !P.celebrated[1]) {
     P.celebrated[1] = true; save();
     S.busy = true; confetti(); fanfare();
@@ -1549,6 +1597,7 @@ function startWords() {
   startWord(S.practice ? 0 : P.words[L.n]);
 }
 function startWord(i) {
+  if (inTrial() && i >= TRIAL_ITEMS) { S.busy = true; openUnlock('spent'); return; }
   const L = S.level, {w, pic} = L.words[i];
   S.session++;
   Object.assign(S, {wordIdx: i, word: w, pic, pos: 0, misses: 0, busy: false, awarded: false, decodable: DECODABLE.has(w)});
@@ -1981,8 +2030,60 @@ $('#resetYes').addEventListener('click', () => {
   $('#resetAsk').focus();
 });
 
+/* play code unlock */
+function openUnlock(why) {
+  closeAllDialogs();
+  $('#lkMsg').textContent = why === 'spent'
+    ? 'You finished the free taster! The full game has all 52 letters and 100 words across 6 activities. Ask a grown-up to enter the play code.'
+    : 'This activity is part of the full game: all 52 letters and 100 words across 6 activities. Ask a grown-up to enter the play code.';
+  $('#lkErr').textContent = ''; $('#lkCode').value = '';
+  openDlg($('#lockDlg'), {initial: '#lkCode'});
+}
+function closeUnlock() {
+  closeDlg($('#lockDlg'));
+  if (!game.hidden && inTrial() && S.busy) goHome();      // the taster for this activity is used up
+}
+async function verifyCode(code) {
+  const clean = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (clean.length < 8) return {ok: false, error: 'Please type the whole play code.'};
+  try {
+    const r = await fetch(TRIAL.verify, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({code: clean})});
+    const d = await r.json().catch(() => ({}));
+    return r.ok && d.ok ? {ok: true} : {ok: false, error: d.error || 'That play code did not work. Check it and try again.'};
+  } catch (e) { return {ok: false, error: 'We could not check the code. Check your internet connection and try again.'}; }
+}
+function applyUnlock(code) {
+  paidUnlocked = true;
+  try { localStorage.setItem(UNLOCK_KEY, String(code).toUpperCase()); } catch (e) {}
+  renderHome();
+}
+$('#lkForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = $('#lkGo'); if (btn.disabled) return;
+  btn.disabled = true; btn.textContent = 'Checking…'; $('#lkErr').textContent = '';
+  const res = await verifyCode($('#lkCode').value);
+  btn.disabled = false; btn.textContent = 'Unlock';
+  if (!res.ok) { $('#lkErr').textContent = res.error; return; }
+  applyUnlock($('#lkCode').value);
+  closeDlg($('#lockDlg')); chime(); confetti();
+  speak('Hooray! The whole game is open!');
+  if (!game.hidden && S.level) startLevel(S.level.n);
+});
+$('#lkClose').addEventListener('click', closeUnlock);
+$('#trialCodeBtn').addEventListener('click', () => openUnlock('locked'));
+// A link from the download page can carry the code: /play/babotap/?code=XXXXX-XXXXXX
+(async function codeFromLink() {
+  if (!TRIAL) return;
+  const u = new URL(location.href), code = u.searchParams.get('code');
+  if (!code) return;
+  u.searchParams.delete('code'); history.replaceState(null, '', u.pathname + u.search + u.hash);
+  if (!inTrial()) return;
+  const res = await verifyCode(code);
+  if (res.ok) { applyUnlock(code); speak('The whole game is open!'); }
+})();
+
 /* backdrop + keyboard */
-const BACKDROP = {cardDlg: closeCard, collectDlg: () => closeDlg($('#collectDlg')), adultDlg: () => closeDlg($('#adultDlg')), pauseDlg: resumeGame};
+const BACKDROP = {cardDlg: closeCard, collectDlg: () => closeDlg($('#collectDlg')), adultDlg: () => closeDlg($('#adultDlg')), pauseDlg: resumeGame, lockDlg: closeUnlock};
 DLGS.forEach(d => d.addEventListener('pointerdown', e => { if (e.target === d && BACKDROP[d.id]) { e.preventDefault(); BACKDROP[d.id](); } }));
 window.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
