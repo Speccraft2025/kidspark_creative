@@ -59,6 +59,9 @@ Target file names (these match `netlify/functions/_shared/products.js`):
    `<pack-id>-all.zip` file alongside it. For the Grade 1 handwriting pack,
    upload the 20 supplied PDFs to `library/grade-one-handwriting/pages/` and
    the complete ZIP to `library/grade-one-handwriting/grade-one-handwriting-all.zip`.
+   Apply the same structure to Grades 2–5 using the pack IDs
+   `grade-two-handwriting`, `grade-three-handwriting`, `grade-four-handwriting`,
+   and `grade-five-handwriting`.
    Keep the bucket private.
 4. **SQL Editor** → paste and run `supabase/schema.sql` from this repo.
 5. **Project Settings → API** → copy:

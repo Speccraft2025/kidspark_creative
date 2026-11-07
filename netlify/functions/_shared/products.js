@@ -16,7 +16,11 @@
 // TODO(kidspark): set your real KES prices before going live.
 // ---------------------------------------------------------------------------
 
-const PACK_IDS = ['alphabet', 'food', 'fruits', 'wildlife', 'mazes', 'dots', 'grade-one-handwriting'];
+const PACK_IDS = [
+  'alphabet', 'food', 'fruits', 'wildlife', 'mazes', 'dots',
+  'grade-one-handwriting', 'grade-two-handwriting', 'grade-three-handwriting',
+  'grade-four-handwriting', 'grade-five-handwriting',
+];
 
 function packDelivery(id) {
   return {
@@ -33,7 +37,7 @@ const PRODUCTS = [
   {
     id: 'complete-bundle',
     name: 'KidSpark Complete Bundle',
-    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes, Join-the-Dots & Grade 1 Handwriting — plus the full Babotap phonics game. Best value.',
+    description: 'Every pack — Alphabet, Food, Fruits, Wildlife, Mazes, Join-the-Dots & Grade 1–5 Handwriting — plus the full Babotap phonics game. Best value.',
     type: 'bundle',
     priceMinor: 60000, // KES 600  <-- PLACEHOLDER
     delivery: {
@@ -97,6 +101,38 @@ const PRODUCTS = [
     type: 'pack',
     priceMinor: 15000, // KES 150
     delivery: packDelivery('grade-one-handwriting'),
+  },
+  {
+    id: 'grade-two-handwriting',
+    name: 'Grade 2 Handwriting Pack',
+    description: '20 printable handwriting practice pages for developing Grade 2 writers.',
+    type: 'pack',
+    priceMinor: 15000, // KES 150
+    delivery: packDelivery('grade-two-handwriting'),
+  },
+  {
+    id: 'grade-three-handwriting',
+    name: 'Grade 3 Handwriting Pack',
+    description: '20 printable handwriting practice pages for confident Grade 3 writers.',
+    type: 'pack',
+    priceMinor: 15000, // KES 150
+    delivery: packDelivery('grade-three-handwriting'),
+  },
+  {
+    id: 'grade-four-handwriting',
+    name: 'Grade 4 Handwriting Pack',
+    description: '20 printable handwriting practice pages for capable Grade 4 writers.',
+    type: 'pack',
+    priceMinor: 15000, // KES 150
+    delivery: packDelivery('grade-four-handwriting'),
+  },
+  {
+    id: 'grade-five-handwriting',
+    name: 'Grade 5 Handwriting Pack',
+    description: '20 printable handwriting practice pages for polished Grade 5 writers.',
+    type: 'pack',
+    priceMinor: 15000, // KES 150
+    delivery: packDelivery('grade-five-handwriting'),
   },
 ];
 
